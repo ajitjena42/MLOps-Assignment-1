@@ -1,0 +1,10 @@
+artifact_location: file:///Users/ajitjena/Desktop/Master Program/Semester 3/MLOps/Assignment/Assignment
+  1/mlruns/0
+creation_time: 1792498824817
+effective_trace_archival_retention: null
+experiment_id: '0'
+last_update_time: 1792498824817
+lifecycle_stage: active
+name: Default
+trace_location: null
+workspace: default

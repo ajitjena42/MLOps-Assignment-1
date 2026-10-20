@@ -1,0 +1,15 @@
+artifact_uri: file:///Users/ajitjena/Desktop/Master Program/Semester 3/MLOps/Assignment/Assignment
+  1/mlruns/321489009407193096/b3a5b5c84351445ebf6198f4e388af31/artifacts
+end_time: 1792498840673
+entry_point_name: ''
+experiment_id: '321489009407193096'
+lifecycle_stage: active
+run_id: b3a5b5c84351445ebf6198f4e388af31
+run_name: RandomForest
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1792498832486
+status: 3
+tags: []
+user_id: ajitjena

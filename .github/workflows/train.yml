@@ -1,0 +1,60 @@
+name: Continuous Training & Model Validation Pipeline
+
+on:
+  workflow_dispatch:
+  schedule:
+    # Weekly retraining trigger (Sundays at 00:00 UTC)
+    - cron: "0 0 * * 0"
+
+jobs:
+  train-and-validate:
+    name: Model Retraining, MLflow Logging & Performance Gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Acquire Dataset from Canonical UCI Source
+        run: python src/data/download_data.py
+
+      - name: Validate Dataset Schema & Constraints
+        run: python src/data/clean_data.py
+
+      - name: Execute Full Model Training & 5-Fold Stratified CV
+        run: python src/models/train.py
+
+      - name: Evaluate Performance Quality Gate
+        run: |
+          python -c "
+          import json
+          with open('models/model_metrics.json') as f:
+              metrics = json.load(f)
+          print('Evaluating Quality Gate Metrics:', metrics)
+          # Require Minimum Test Recall >= 0.75 and Test ROC-AUC >= 0.80
+          assert metrics['recall'] >= 0.75, f'Recall gate failed: {metrics[\"recall\"]} < 0.75'
+          assert metrics['roc_auc'] >= 0.80, f'ROC-AUC gate failed: {metrics[\"roc_auc\"]} < 0.80'
+          print('Quality Gate Passed: Candidate satisfies clinical screening performance criteria.')
+          "
+
+      - name: Upload Trained Model Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: model-artifacts
+          path: |
+            models/heartguard_pipeline.joblib
+            models/model_metadata.json
+            models/model_metrics.json
+            reports/figures/
+          retention-days: 14

@@ -1,0 +1,33 @@
+# Git & VCS
+.git/
+.gitignore
+
+# Python & Environment
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+.venv/
+venv/
+env/
+.env
+
+# Testing & Linting
+.pytest_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+tests/
+
+# Jupyter & Documentation
+.ipynb_checkpoints/
+notebooks/
+docs/
+reports/
+screenshots/
+*.md
+
+# Kubernetes & Local Dev
+deployment/
+monitoring/

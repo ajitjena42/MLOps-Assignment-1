@@ -1,0 +1,153 @@
+{
+  "info": {
+    "_postman_id": "c1f7a0b3-9c8e-4a65-8b3d-71b3e55c3c01",
+    "name": "Heart Disease Prediction API (BITS Pilani MLOps)",
+    "description": "Comprehensive Postman collection for testing the containerized Heart Disease Serving API endpoints including Health Check, Single Prediction, High-Risk Prediction, Batch Prediction, and Prometheus Metrics.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "1. Health & Readiness Probe",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/health",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["health"]
+        },
+        "description": "Verifies that the Docker container is alive, healthy, and has loaded the ML pipeline into memory."
+      },
+      "response": []
+    },
+    {
+      "name": "2. Root Metadata Endpoint",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:8000/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": [""]
+        },
+        "description": "Returns service metadata and navigation endpoints."
+      },
+      "response": []
+    },
+    {
+      "name": "3. Predict - Normal / Low-Risk Patient",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"age\": 55.0,\n  \"sex\": 0.0,\n  \"cp\": 2.0,\n  \"trestbps\": 115.0,\n  \"chol\": 195.0,\n  \"fbs\": 0.0,\n  \"restecg\": 0.0,\n  \"thalach\": 178.0,\n  \"exang\": 0.0,\n  \"oldpeak\": 0.2,\n  \"slope\": 1.0,\n  \"ca\": 0.0,\n  \"thal\": 3.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["predict"]
+        },
+        "description": "Evaluates a patient with normal clinical biomarkers. Expected result: Class 0 (Absence of Heart Disease) with low probability (< 20%)."
+      },
+      "response": []
+    },
+    {
+      "name": "4. Predict - High-Risk Patient",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"age\": 67.0,\n  \"sex\": 1.0,\n  \"cp\": 4.0,\n  \"trestbps\": 160.0,\n  \"chol\": 286.0,\n  \"fbs\": 0.0,\n  \"restecg\": 2.0,\n  \"thalach\": 108.0,\n  \"exang\": 1.0,\n  \"oldpeak\": 2.6,\n  \"slope\": 2.0,\n  \"ca\": 2.0,\n  \"thal\": 7.0\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["predict"]
+        },
+        "description": "Evaluates a symptomatic high-risk cardiac patient. Expected result: Class 1 (Presence of Heart Disease) with elevated probability (> 80%)."
+      },
+      "response": []
+    },
+    {
+      "name": "5. Batch Predictions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"patients\": [\n    {\n      \"age\": 55.0,\n      \"sex\": 0.0,\n      \"cp\": 2.0,\n      \"trestbps\": 115.0,\n      \"chol\": 195.0,\n      \"fbs\": 0.0,\n      \"restecg\": 0.0,\n      \"thalach\": 178.0,\n      \"exang\": 0.0,\n      \"oldpeak\": 0.2,\n      \"slope\": 1.0,\n      \"ca\": 0.0,\n      \"thal\": 3.0\n    },\n    {\n      \"age\": 67.0,\n      \"sex\": 1.0,\n      \"cp\": 4.0,\n      \"trestbps\": 160.0,\n      \"chol\": 286.0,\n      \"fbs\": 0.0,\n      \"restecg\": 2.0,\n      \"thalach\": 108.0,\n      \"exang\": 1.0,\n      \"oldpeak\": 2.6,\n      \"slope\": 2.0,\n      \"ca\": 2.0,\n      \"thal\": 7.0\n    }\n  ]\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8000/predict/batch",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["predict", "batch"]
+        },
+        "description": "Scores a batch of patient records in parallel."
+      },
+      "response": []
+    },
+    {
+      "name": "6. Prometheus Metrics Scrape",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:8000/metrics",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "8000",
+          "path": ["metrics"]
+        },
+        "description": "Scrapes Prometheus metrics for real-time latency histograms, prediction counters, and HTTP statuses."
+      },
+      "response": []
+    }
+  ]
+}

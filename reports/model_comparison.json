@@ -1,0 +1,39 @@
+{
+  "selected_model": "LogisticRegression",
+  "selection_criteria": "Clinical Recall priority (60%) + Discriminative ROC-AUC (40%)",
+  "models": {
+    "LogisticRegression": {
+      "5-Fold CV ROC-AUC": 0.9029,
+      "Test Accuracy": "86.89%",
+      "Test Precision": "83.33%",
+      "Test Recall (Sensitivity)": "89.29%",
+      "Test F1-Score": 0.8621,
+      "Test ROC-AUC": 0.9632,
+      "False Negatives": "3 / 28",
+      "Best Parameters": "{'classifier__C': 5.0, 'classifier__penalty': 'l2', 'classifier__solver': 'lbfgs'}",
+      "mlflow_run_id": "2705487d243744d5b1dfedb8de1b63dd"
+    },
+    "RandomForest": {
+      "5-Fold CV ROC-AUC": 0.9026,
+      "Test Accuracy": "88.52%",
+      "Test Precision": "86.21%",
+      "Test Recall (Sensitivity)": "89.29%",
+      "Test F1-Score": 0.8772,
+      "Test ROC-AUC": 0.9459,
+      "False Negatives": "3 / 28",
+      "Best Parameters": "{'classifier__max_depth': 5, 'classifier__min_samples_leaf': 2, 'classifier__min_samples_split': 5, 'classifier__n_estimators': 100}",
+      "mlflow_run_id": "7e55e5c0f3144a4b9bf200c2a70c8668"
+    },
+    "GradientBoosting": {
+      "5-Fold CV ROC-AUC": 0.8847,
+      "Test Accuracy": "86.89%",
+      "Test Precision": "85.71%",
+      "Test Recall (Sensitivity)": "85.71%",
+      "Test F1-Score": 0.8571,
+      "Test ROC-AUC": 0.928,
+      "False Negatives": "4 / 28",
+      "Best Parameters": "{'classifier__learning_rate': 0.01, 'classifier__max_depth': 3, 'classifier__n_estimators': 100}",
+      "mlflow_run_id": "9f953e192a4340829c471c775e1d66e1"
+    }
+  }
+}

@@ -1,0 +1,43 @@
+artifact_path: file:///Users/ajitjena/Desktop/Master Program/Semester 3/MLOps/Assignment/Assignment
+  1/mlruns/321489009407193096/models/m-97b5dafe17a3435ea900036d82f5a6d1/artifacts
+flavors:
+  python_function:
+    env:
+      conda: conda.yaml
+      virtualenv: python_env.yaml
+    loader_module: mlflow.sklearn
+    model_path: model.pkl
+    predict_fn: predict
+    python_version: 3.13.5
+  sklearn:
+    code: null
+    pickled_model: model.pkl
+    serialization_format: cloudpickle
+    sklearn_version: 1.9.1
+    skops_trusted_types: null
+is_signature_from_type_hint: false
+mlflow_version: 3.17.1
+model_id: m-97b5dafe17a3435ea900036d82f5a6d1
+model_size_bytes: 355920
+model_uuid: m-97b5dafe17a3435ea900036d82f5a6d1
+prompts: null
+run_id: b3a5b5c84351445ebf6198f4e388af31
+saved_input_example_info:
+  artifact_path: input_example.json
+  pandas_orient: split
+  serving_input_path: serving_input_example.json
+  type: dataframe
+signature:
+  inputs: '[{"type": "double", "name": "age", "required": true}, {"type": "double",
+    "name": "trestbps", "required": true}, {"type": "double", "name": "chol", "required":
+    true}, {"type": "double", "name": "thalach", "required": true}, {"type": "double",
+    "name": "oldpeak", "required": true}, {"type": "double", "name": "sex", "required":
+    true}, {"type": "double", "name": "cp", "required": true}, {"type": "double",
+    "name": "fbs", "required": true}, {"type": "double", "name": "restecg", "required":
+    true}, {"type": "double", "name": "exang", "required": true}, {"type": "double",
+    "name": "slope", "required": true}, {"type": "double", "name": "ca", "required":
+    true}, {"type": "double", "name": "thal", "required": true}]'
+  outputs: '[{"type": "long", "required": true}]'
+  params: null
+type_hint_from_example: false
+utc_time_created: '2026-10-20 12:20:37.799891'

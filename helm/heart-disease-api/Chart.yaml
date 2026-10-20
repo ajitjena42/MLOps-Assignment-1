@@ -1,0 +1,15 @@
+apiVersion: v2
+name: heartguard-api
+description: Production Helm chart for HeartGuard — An Observable ML Pipeline
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+maintainers:
+  - name: Student 2025AE05839
+    email: 2025ae05839@wilp.bits-pilani.ac.in
+keywords:
+  - mlops
+  - machine-learning
+  - heartguard
+  - fastapi
+  - scikit-learn

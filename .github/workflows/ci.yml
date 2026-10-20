@@ -1,0 +1,96 @@
+name: CI Pipeline — Testing & Quality Gates
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  lint-and-style:
+    name: Code Quality & Linting (Ruff)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Linting Tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install ruff
+
+      - name: Run Ruff Lint Checks
+        run: ruff check .
+
+      - name: Run Ruff Formatting Check
+        run: ruff format --check .
+
+  test-suite:
+    name: Automated Unit & Integration Tests (pytest)
+    needs: lint-and-style
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies & HeartGuard Package
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install -e .
+
+      - name: Download & Prepare UCI Cleveland Dataset
+        run: python src/data/download_data.py
+
+      - name: Validate Dataset Schema & Clean Data
+        run: python src/data/clean_data.py
+
+      - name: Train Baseline Model Artifact for Testing
+        run: python src/models/train.py
+
+      - name: Run Pytest Suite
+        run: pytest -v tests/
+
+      - name: Upload Test Coverage Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          retention-days: 7
+
+  docker-build-verification:
+    name: Container Build & Health Smoke Test
+    needs: test-suite
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build HeartGuard Inference Image
+        run: |
+          docker build -t heartguard-api:ci-test .
+
+      - name: Smoke Test Running Container
+        run: |
+          docker run -d --name heartguard-ci -p 8000:8000 heartguard-api:ci-test
+          sleep 5
+          docker ps
+          curl -f http://localhost:8000/health || (docker logs heartguard-ci && exit 1)
+          curl -f http://localhost:8000/metrics || exit 1
+          docker stop heartguard-ci
+          docker rm heartguard-ci

@@ -1,0 +1,15 @@
+# =========================================================================
+# Conda Environment Specification - Heart Disease MLOps System
+# Course: AIMLCZG523 - Machine Learning Operations (MLOps)
+# Institution: Birla Institute of Technology & Science (BITS), Pilani
+# Target Runtime: Python 3.11
+# =========================================================================
+name: mlops-heart-disease
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - pip:
+      - -r requirements.txt

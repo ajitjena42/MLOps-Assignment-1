@@ -1,0 +1,65 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Environment variables & secrets
+.env
+!.env.example
+*.pem
+*.key
+
+# IDE & OS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.ruff_cache/
+
+# Jupyter & Notebook checkpoints
+.ipynb_checkpoints
+*/.ipynb_checkpoints/*
+
+# MLflow tracking db/artifacts if large (keep config and structure)
+mlruns/.trash/
+
+# Kubernetes / Local temp
+*.tmp
+*.log
+.matplotlib/
+*.zip

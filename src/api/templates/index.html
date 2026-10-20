@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HeartGuard — An Observable ML Pipeline | BITS Pilani MLOps</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0b1120;
+      --card-bg: rgba(30, 41, 59, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --input-bg: #0f172a;
+      --input-border: #334155;
+      --primary: #38bdf8;
+      --primary-hover: #0284c7;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-green: #10b981;
+      --accent-red: #ef4444;
+      --accent-amber: #f59e0b;
+      --radius: 12px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(56, 189, 248, 0.12) 0px, transparent 50%),
+        radial-gradient(at 100% 100%, rgba(139, 92, 246, 0.12) 0px, transparent 50%);
+      color: var(--text-main);
+      min-height: 100vh;
+      padding: 2rem 1.5rem;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid var(--card-border);
+      margin-bottom: 2rem;
+    }
+
+    .brand h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #f8fafc 30%, #38bdf8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand p {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-green);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-green);
+      box-shadow: 0 0 8px var(--accent-green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .nav-btn {
+      text-decoration: none;
+      color: var(--text-main);
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--card-border);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.825rem;
+      font-weight: 600;
+      transition: var(--transition);
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .nav-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--primary);
+      transform: translateY(-1px);
+    }
+
+    /* Main Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: 1.6fr 1fr;
+      gap: 2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 1.75rem;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .preset-btns {
+      display: flex;
+      gap: 0.5rem;
+    }
+
+    .btn-preset {
+      background: #1e293b;
+      border: 1px solid var(--input-border);
+      color: var(--text-muted);
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+
+    .btn-preset:hover {
+      color: var(--text-main);
+      border-color: var(--primary);
+    }
+
+    /* Form Fields */
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.1rem;
+    }
+
+    @media (max-width: 640px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .form-group.full-width {
+      grid-column: span 2;
+    }
+
+    label {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .unit {
+      color: #64748b;
+      font-size: 0.75rem;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    input, select {
+      background: var(--input-bg);
+      border: 1px solid var(--input-border);
+      border-radius: 8px;
+      padding: 0.65rem 0.85rem;
+      color: var(--text-main);
+      font-family: inherit;
+      font-size: 0.9rem;
+      transition: var(--transition);
+      outline: none;
+    }
+
+    input:focus, select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    .submit-btn {
+      width: 100%;
+      margin-top: 1.5rem;
+      padding: 0.85rem;
+      background: linear-gradient(135deg, #0284c7 0%, #38bdf8 100%);
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    /* Results Card */
+    .result-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      min-height: 380px;
+    }
+
+    .empty-state {
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .empty-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+    }
+
+    .risk-banner {
+      width: 100%;
+      padding: 1.25rem;
+      border-radius: 12px;
+      margin-bottom: 1.5rem;
+      border: 1px solid transparent;
+      animation: fadeIn 0.4s ease-out;
+    }
+
+    .risk-banner.low {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.4);
+      color: #34d399;
+    }
+
+    .risk-banner.high {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: rgba(239, 68, 68, 0.4);
+      color: #f87171;
+    }
+
+    .risk-status {
+      font-size: 1.35rem;
+      font-weight: 800;
+      margin-bottom: 0.25rem;
+    }
+
+    .risk-desc {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    .gauge-card {
+      width: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      margin-bottom: 1rem;
+    }
+
+    .metrics-row {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--card-border);
+    }
+
+    .metric-item {
+      text-align: center;
+    }
+
+    .metric-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .metric-lbl {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .progress-bar-bg {
+      width: 100%;
+      height: 10px;
+      background: #1e293b;
+      border-radius: 999px;
+      overflow: hidden;
+      margin: 1rem 0;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .disclaimer {
+      font-size: 0.725rem;
+      color: #64748b;
+      text-align: center;
+      margin-top: 1.5rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <header>
+      <div class="brand">
+        <h1>HeartGuard Diagnostic Platform</h1>
+        <p>BITS Pilani AIMLCZG523 MLOps Assignment 01 • Student ID: 2025AE05839</p>
+      </div>
+      <div class="nav-links">
+        <span class="badge">
+          <span class="badge-dot"></span>
+          Model v1.0.0 Online (AUC: 0.9632)
+        </span>
+        <a href="/docs" target="_blank" class="nav-btn">📖 Swagger Docs</a>
+        <a href="http://localhost:3001/d/heart-disease-mlops" target="_blank" class="nav-btn">📊 Grafana</a>
+        <a href="/metrics" target="_blank" class="nav-btn">📈 Metrics</a>
+      </div>
+    </header>
+
+    <!-- Main Grid -->
+    <div class="grid">
+      <!-- Input Card -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Patient Clinical Biomarkers</h2>
+          <div class="preset-btns">
+            <button class="btn-preset" onclick="loadPreset('healthy')">🌱 Healthy Preset</button>
+            <button class="btn-preset" onclick="loadPreset('high_risk')">🚨 High-Risk Preset</button>
+          </div>
+        </div>
+
+        <form id="predictionForm">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Age <span class="unit">years</span></label>
+              <input type="number" id="age" value="55" min="18" max="110" step="1" required>
+            </div>
+
+            <div class="form-group">
+              <label>Biological Sex</label>
+              <select id="sex">
+                <option value="1">Male (1)</option>
+                <option value="0">Female (0)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Chest Pain Syndrome</label>
+              <select id="cp">
+                <option value="1">Typical Angina (1)</option>
+                <option value="2">Atypical Angina (2)</option>
+                <option value="3">Non-Anginal Pain (3)</option>
+                <option value="4" selected>Asymptomatic (4)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Resting Blood Pressure <span class="unit">mm Hg</span></label>
+              <input type="number" id="trestbps" value="130" min="70" max="250" required>
+            </div>
+
+            <div class="form-group">
+              <label>Serum Cholesterol <span class="unit">mg/dl</span></label>
+              <input type="number" id="chol" value="240" min="100" max="600" required>
+            </div>
+
+            <div class="form-group">
+              <label>Fasting Blood Sugar > 120</label>
+              <select id="fbs">
+                <option value="0" selected>False (<= 120 mg/dl)</option>
+                <option value="1">True (> 120 mg/dl)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Resting ECG Results</label>
+              <select id="restecg">
+                <option value="0" selected>Normal (0)</option>
+                <option value="1">ST-T Wave Abnormality (1)</option>
+                <option value="2">Left Ventricular Hypertrophy (2)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Max Heart Rate Achieved <span class="unit">bpm (thalach)</span></label>
+              <input type="number" id="thalach" value="150" min="60" max="230" required>
+            </div>
+
+            <div class="form-group">
+              <label>Exercise Induced Angina</label>
+              <select id="exang">
+                <option value="0" selected>No (0)</option>
+                <option value="1">Yes (1)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>ST Depression <span class="unit">oldpeak (mm)</span></label>
+              <input type="number" id="oldpeak" value="1.0" min="0" max="10" step="0.1" required>
+            </div>
+
+            <div class="form-group">
+              <label>Peak Exercise ST Slope</label>
+              <select id="slope">
+                <option value="1">Upsloping (1)</option>
+                <option value="2" selected>Flat (2)</option>
+                <option value="3">Downsloping (3)</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Major Fluoroscopy Vessels <span class="unit">ca (0-3)</span></label>
+              <select id="ca">
+                <option value="0" selected>0 Major Vessels</option>
+                <option value="1">1 Major Vessel</option>
+                <option value="2">2 Major Vessels</option>
+                <option value="3">3 Major Vessels</option>
+              </select>
+            </div>
+
+            <div class="form-group full-width">
+              <label>Thalassemia Scintigraphy</label>
+              <select id="thal">
+                <option value="3" selected>Normal (3)</option>
+                <option value="6">Fixed Defect (6)</option>
+                <option value="7">Reversible Defect (7)</option>
+              </select>
+            </div>
+          </div>
+
+          <button type="submit" class="submit-btn" id="btnSubmit">
+            ⚡ Evaluate Patient Cardiac Risk
+          </button>
+        </form>
+      </div>
+
+      <!-- Result Card -->
+      <div class="card">
+        <div class="card-header">
+          <h2 class="card-title">Diagnostic Assessment</h2>
+          <span style="font-size: 0.8rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace;" id="latencyBadge">ready</span>
+        </div>
+
+        <div class="result-container" id="resultContainer">
+          <div class="empty-state">
+            <div class="empty-icon">🫀</div>
+            <p>Enter patient biomarkers or load a preset, then click <b>Evaluate Patient Cardiac Risk</b>.</p>
+          </div>
+        </div>
+
+        <p class="disclaimer">
+          ⚠️ <b>Academic & Educational Notice:</b> This MLOps model was developed for BITS Pilani course evaluation. It is not an FDA/CDSCO certified medical device.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function loadPreset(type) {
+      if (type === 'healthy') {
+        document.getElementById('age').value = 45;
+        document.getElementById('sex').value = "0";
+        document.getElementById('cp').value = "2";
+        document.getElementById('trestbps').value = 115;
+        document.getElementById('chol').value = 195;
+        document.getElementById('fbs').value = "0";
+        document.getElementById('restecg').value = "0";
+        document.getElementById('thalach').value = 178;
+        document.getElementById('exang').value = "0";
+        document.getElementById('oldpeak').value = 0.2;
+        document.getElementById('slope').value = "1";
+        document.getElementById('ca').value = "0";
+        document.getElementById('thal').value = "3";
+      } else if (type === 'high_risk') {
+        document.getElementById('age').value = 67;
+        document.getElementById('sex').value = "1";
+        document.getElementById('cp').value = "4";
+        document.getElementById('trestbps').value = 160;
+        document.getElementById('chol').value = 286;
+        document.getElementById('fbs').value = "0";
+        document.getElementById('restecg').value = "2";
+        document.getElementById('thalach').value = 108;
+        document.getElementById('exang').value = "1";
+        document.getElementById('oldpeak').value = 2.6;
+        document.getElementById('slope').value = "2";
+        document.getElementById('ca').value = "2";
+        document.getElementById('thal').value = "7";
+      }
+    }
+
+    document.getElementById('predictionForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('btnSubmit');
+      btn.innerText = 'Calculating Diagnostic Inference...';
+      btn.disabled = true;
+
+      const payload = {
+        age: parseFloat(document.getElementById('age').value),
+        sex: parseFloat(document.getElementById('sex').value),
+        cp: parseFloat(document.getElementById('cp').value),
+        trestbps: parseFloat(document.getElementById('trestbps').value),
+        chol: parseFloat(document.getElementById('chol').value),
+        fbs: parseFloat(document.getElementById('fbs').value),
+        restecg: parseFloat(document.getElementById('restecg').value),
+        thalach: parseFloat(document.getElementById('thalach').value),
+        exang: parseFloat(document.getElementById('exang').value),
+        oldpeak: parseFloat(document.getElementById('oldpeak').value),
+        slope: parseFloat(document.getElementById('slope').value),
+        ca: parseFloat(document.getElementById('ca').value),
+        thal: parseFloat(document.getElementById('thal').value)
+      };
+
+      try {
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!res.ok) {
+          throw new Error('Server returned HTTP ' + res.status);
+        }
+
+        const data = await res.json();
+        renderResult(data);
+      } catch (err) {
+        alert('Prediction Failed: ' + err.message);
+      } finally {
+        btn.innerText = '⚡ Evaluate Patient Cardiac Risk';
+        btn.disabled = false;
+      }
+    });
+
+    function renderResult(data) {
+      const container = document.getElementById('resultContainer');
+      document.getElementById('latencyBadge').innerText = data.latency_ms + ' ms';
+
+      const isHighRisk = data.prediction === 1;
+      const riskClass = isHighRisk ? 'high' : 'low';
+      const riskColor = isHighRisk ? '#ef4444' : '#10b981';
+      const pct = (data.probability_disease * 100).toFixed(1);
+
+      container.innerHTML = `
+        <div class="risk-banner ${riskClass}">
+          <div class="risk-status">${isHighRisk ? '🚨 ELEVATED RISK: HEART DISEASE DETECTED' : '✅ LOW RISK: NO SIGNIFICANT DISEASE'}</div>
+          <div class="risk-desc">${isHighRisk ? 'Coronary artery diameter narrowing > 50% indicated. Clinical cardiology referral advised.' : 'Normal functional capacity. Angiographic narrowing < 50% estimated.'}</div>
+        </div>
+
+        <div class="gauge-card">
+          <div style="display:flex; justify-content:space-between; font-size:0.85rem; font-weight:600;">
+            <span>Disease Risk Probability</span>
+            <span style="color: ${riskColor}; font-family:'JetBrains Mono',monospace;">${pct}%</span>
+          </div>
+
+          <div class="progress-bar-bg">
+            <div class="progress-bar-fill" style="width: ${pct}%; background: ${riskColor};"></div>
+          </div>
+
+          <div class="metrics-row">
+            <div class="metric-item">
+              <div class="metric-val" style="color: ${riskColor};">${(data.confidence * 100).toFixed(1)}%</div>
+              <div class="metric-lbl">Confidence</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val">${data.prediction}</div>
+              <div class="metric-lbl">Target Class</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val">${data.latency_ms} ms</div>
+              <div class="metric-lbl">Model Latency</div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+  </script>
+</body>
+</html>
