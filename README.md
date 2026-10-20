@@ -112,6 +112,7 @@ Candidate models were tuned and evaluated under Stratified 5-Fold Cross-Validati
 ├── Dockerfile                                 # Multi-stage / slim Python 3.11 container manifest
 ├── pyproject.toml                             # Standard Python package metadata, ruff & pytest config
 ├── README.md                                  # Repository documentation
+├── SETUP.md                                   # Step-by-step setup and installation guide
 ├── data/
 │   ├── raw/heart.csv                          # Downloaded UCI raw dataset (303 records)
 │   └── processed/heart_cleaned.csv            # Validated & cleaned dataset with binary target
@@ -179,6 +180,8 @@ Candidate models were tuned and evaluated under Stratified 5-Fold Cross-Validati
 ---
 
 ## 6. Quickstart & Local Setup Guide
+
+> 📘 **Looking for complete step-by-step installation instructions?** Refer to [SETUP.md](SETUP.md) for a comprehensive guide across Virtualenv, Conda, Docker, Docker Compose, Kubernetes, and troubleshooting.
 
 ### 6.1 Prerequisites
 - Python 3.11+
@@ -405,7 +408,7 @@ helm status heartguard -n mlops
 | **6** | **Model Containerization** | **5** | **Verified** | `Dockerfile` (non-root security), `scripts/test_docker.sh` (live run verified) |
 | **7** | **Production Deployment** | **7** | **Verified** | `k8s/` manifests, `helm/heart-disease-api/` chart, LoadBalancer, Ingress, HPA |
 | **8** | **Monitoring & Logging** | **3** | **Verified** | Structured JSON access logs, Prometheus `/metrics`, `monitoring/grafana_dashboard.json`, `/drift` Kolmogorov-Smirnov & PSI engine |
-| **9** | **Documentation & Reporting** | **2** | **Verified** | 10-Page `reports/FINAL_REPORT.pdf`, `reports/FINAL_REPORT.md`, `docs/implementation-audit.md`, `docs/customization-notes.md`, `README.md` |
+| **9** | **Documentation & Reporting** | **2** | **Verified** | 10-Page `reports/FINAL_REPORT.pdf`, `reports/FINAL_REPORT.md`, `SETUP.md`, `docs/implementation-audit.md`, `docs/customization-notes.md`, `README.md` |
 | **TOTAL**| **End-to-End MLOps Solution** | **50** | **100% Complete** | **All Deliverables Verified & Operational** |
 
 ---
