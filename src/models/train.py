@@ -18,7 +18,7 @@ if str(PROJECT_ROOT) not in sys.path:
 MPL_DIR = PROJECT_ROOT / ".matplotlib"
 MPL_DIR.mkdir(parents=True, exist_ok=True)
 os.environ["MPLCONFIGDIR"] = str(MPL_DIR)
-os.environ["MLFLOW_ALLOW_FILE_STORE"] = "true"
+# SQLite backend is used instead of the deprecated filesystem store
 
 from typing import Any
 
@@ -56,7 +56,7 @@ DATA_PATH = PROJECT_ROOT / "data" / "processed" / "heart_cleaned.csv"
 MODELS_DIR = PROJECT_ROOT / "models"
 FIGURES_DIR = PROJECT_ROOT / "reports" / "figures"
 REPORTS_DIR = PROJECT_ROOT / "reports"
-MLFLOW_TRACKING_URI = f"file:{PROJECT_ROOT / 'mlruns'}"
+MLFLOW_TRACKING_URI = f"sqlite:///{PROJECT_ROOT / 'mlruns' / 'mlflow.db'}"
 EXPERIMENT_NAME = "heart-disease-classification"
 
 

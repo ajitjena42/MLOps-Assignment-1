@@ -40,7 +40,7 @@ class Settings:
         self.FIGURES_DIR: Path = PROJECT_ROOT / os.getenv("FIGURES_DIR", "reports/figures")
 
         # MLflow Governance
-        self.MLFLOW_TRACKING_URI: str = os.getenv("MLFLOW_TRACKING_URI", f"file:{PROJECT_ROOT / 'mlruns'}")
+        self.MLFLOW_TRACKING_URI: str = os.getenv("MLFLOW_TRACKING_URI", f"sqlite:///{PROJECT_ROOT / 'mlruns' / 'mlflow.db'}")
         self.MLFLOW_EXPERIMENT_NAME: str = os.getenv("MLFLOW_EXPERIMENT_NAME", "heart-disease-classification")
 
         # Observability & Monitoring
