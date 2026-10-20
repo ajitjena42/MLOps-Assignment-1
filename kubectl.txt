@@ -1,0 +1,4 @@
+kubectl get pods
+kubectl get services
+kubectl get hpa -n mlops
+kubectl get ingress -n mlops
