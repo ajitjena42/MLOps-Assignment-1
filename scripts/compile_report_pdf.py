@@ -68,12 +68,7 @@ class NumberedCanvas(canvas.Canvas):
 def build_pdf():
     OUTPUT_PDF.parent.mkdir(parents=True, exist_ok=True)
     doc = SimpleDocTemplate(
-        str(OUTPUT_PDF),
-        pagesize=letter,
-        leftMargin=54,
-        rightMargin=54,
-        topMargin=54,
-        bottomMargin=54
+        str(OUTPUT_PDF), pagesize=letter, leftMargin=54, rightMargin=54, topMargin=54, bottomMargin=54
     )
 
     styles = getSampleStyleSheet()
@@ -87,7 +82,7 @@ def build_pdf():
         leading=24,
         textColor=colors.HexColor("#0f2b48"),
         alignment=1,
-        spaceAfter=8
+        spaceAfter=8,
     )
 
     subtitle_style = ParagraphStyle(
@@ -98,7 +93,7 @@ def build_pdf():
         leading=15,
         textColor=colors.HexColor("#4a5568"),
         alignment=1,
-        spaceAfter=15
+        spaceAfter=15,
     )
 
     h1_style = ParagraphStyle(
@@ -110,7 +105,7 @@ def build_pdf():
         textColor=colors.HexColor("#0f2b48"),
         spaceBefore=10,
         spaceAfter=6,
-        keepWithNext=True
+        keepWithNext=True,
     )
 
     h2_style = ParagraphStyle(
@@ -122,7 +117,7 @@ def build_pdf():
         textColor=colors.HexColor("#1a365d"),
         spaceBefore=6,
         spaceAfter=4,
-        keepWithNext=True
+        keepWithNext=True,
     )
 
     body_style = ParagraphStyle(
@@ -132,7 +127,7 @@ def build_pdf():
         fontSize=9,
         leading=12.5,
         textColor=colors.HexColor("#2d3748"),
-        spaceAfter=5
+        spaceAfter=5,
     )
 
     callout_style = ParagraphStyle(
@@ -146,15 +141,29 @@ def build_pdf():
         borderColor=colors.HexColor("#feb2b2"),
         borderWidth=1,
         borderPadding=6,
-        spaceAfter=8
+        spaceAfter=8,
     )
 
     story = []
 
     # ==================== PAGE 1: TITLE & EXECUTIVE SUMMARY ====================
     story.append(Spacer(1, 10))
-    story.append(Paragraph("BITS Pilani — Work Integrated Learning Programmes", ParagraphStyle("Inst", fontName="Helvetica-Bold", fontSize=12, alignment=1, textColor=colors.HexColor("#1a365d"))))
-    story.append(Paragraph("M.Tech in AI & Machine Learning / AIMLCZG523: Machine Learning Operations (MLOps)", ParagraphStyle("Course", fontName="Helvetica", fontSize=10, alignment=1, textColor=colors.HexColor("#4a5568"))))
+    story.append(
+        Paragraph(
+            "BITS Pilani — Work Integrated Learning Programmes",
+            ParagraphStyle(
+                "Inst", fontName="Helvetica-Bold", fontSize=12, alignment=1, textColor=colors.HexColor("#1a365d")
+            ),
+        )
+    )
+    story.append(
+        Paragraph(
+            "M.Tech in AI & Machine Learning / AIMLCZG523: Machine Learning Operations (MLOps)",
+            ParagraphStyle(
+                "Course", fontName="Helvetica", fontSize=10, alignment=1, textColor=colors.HexColor("#4a5568")
+            ),
+        )
+    )
     story.append(Spacer(1, 12))
     story.append(HRFlowable(width="100%", thickness=2, color=colors.HexColor("#0f2b48"), spaceAfter=15))
 
@@ -163,71 +172,97 @@ def build_pdf():
 
     # Meta Table
     meta_data = [
-        [Paragraph("<b>Student ID:</b> 2025AE05839", body_style), Paragraph("<b>Course Code:</b> AIMLCZG523", body_style)],
-        [Paragraph("<b>Assignment:</b> Assignment 01 (Total Marks: 50)", body_style), Paragraph("<b>Status:</b> Production Ready & Verified", body_style)],
-        [Paragraph("<b>Dataset:</b> Heart Disease UCI (Cleveland)", body_style), Paragraph("<b>Frameworks:</b> Scikit-Learn, MLflow, FastAPI, Docker, K8s", body_style)],
-        [Paragraph("<b>Target Metric:</b> Recall (0.8929) & ROC-AUC (0.9632)", body_style), Paragraph("<b>Observability:</b> Prometheus, Grafana, Statistical Drift", body_style)]
+        [
+            Paragraph("<b>Student ID:</b> 2025AE05839", body_style),
+            Paragraph("<b>Course Code:</b> AIMLCZG523", body_style),
+        ],
+        [
+            Paragraph("<b>Assignment:</b> Assignment 01 (Total Marks: 50)", body_style),
+            Paragraph("<b>Status:</b> Production Ready & Verified", body_style),
+        ],
+        [
+            Paragraph("<b>Dataset:</b> Heart Disease UCI (Cleveland)", body_style),
+            Paragraph("<b>Frameworks:</b> Scikit-Learn, MLflow, FastAPI, Docker, K8s", body_style),
+        ],
+        [
+            Paragraph("<b>Target Metric:</b> Recall (0.8929) & ROC-AUC (0.9632)", body_style),
+            Paragraph("<b>Observability:</b> Prometheus, Grafana, Statistical Drift", body_style),
+        ],
     ]
     meta_table = Table(meta_data, colWidths=[250, 250])
-    meta_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#edf2f7")),
-        ("PADDING", (0, 0), (-1, -1), 5),
-        ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ("VALIGN", (0, 0), (-1, -1), "MIDDLE")
-    ]))
+    meta_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, -1), colors.HexColor("#edf2f7")),
+                ("PADDING", (0, 0), (-1, -1), 5),
+                ("BOX", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
+                ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
+            ]
+        )
+    )
     story.append(meta_table)
     story.append(Spacer(1, 12))
 
     story.append(Paragraph("Executive Summary & Project Scope", h1_style))
-    story.append(Paragraph(
-        "Cardiovascular diseases represent the single largest cause of mortality globally. Automated computational screening "
-        "requires stringent adherence to operational reliability, zero data leakage, and clinical safety thresholds. "
-        "This project implements a complete, enterprise-grade MLOps system satisfying all 9 tasks of Assignment 01: "
-        "(1) Automated data acquisition and statistical data validation; (2) In-depth exploratory data analysis across 8 dimensions; "
-        "(3) Leak-free feature transformation and dual candidate classifier benchmarking (Logistic Regression vs. Random Forest); "
-        "(4) MLflow centralized experiment tracking; (5) Modular model packaging; (6) 29 automated Pytest unit/integration tests with GitHub Actions CI/CD; "
-        "(7) Non-root secure Docker containerization; (8) Production Kubernetes deployment manifests and Helm chart with HPA autoscaling; and "
-        "(9) Full-stack observability with structured JSON logging, Prometheus metrics, and Grafana visualization.",
-        body_style
-    ))
-    story.append(Paragraph(
-        "<b>Clinical Disclaimer:</b> This system is designed solely as an educational and research demonstrator for the BITS Pilani MLOps course. "
-        "It is not intended for autonomous clinical decision-making or direct patient diagnostic therapy without physician validation.",
-        callout_style
-    ))
+    story.append(
+        Paragraph(
+            "Cardiovascular diseases represent the single largest cause of mortality globally. Automated computational screening "
+            "requires stringent adherence to operational reliability, zero data leakage, and clinical safety thresholds. "
+            "This project implements a complete, enterprise-grade MLOps system satisfying all 9 tasks of Assignment 01: "
+            "(1) Automated data acquisition and statistical data validation; (2) In-depth exploratory data analysis across 8 dimensions; "
+            "(3) Leak-free feature transformation and dual candidate classifier benchmarking (Logistic Regression vs. Random Forest); "
+            "(4) MLflow centralized experiment tracking; (5) Modular model packaging; (6) 29 automated Pytest unit/integration tests with GitHub Actions CI/CD; "
+            "(7) Non-root secure Docker containerization; (8) Production Kubernetes deployment manifests and Helm chart with HPA autoscaling; and "
+            "(9) Full-stack observability with structured JSON logging, Prometheus metrics, and Grafana visualization.",
+            body_style,
+        )
+    )
+    story.append(
+        Paragraph(
+            "<b>Clinical Disclaimer:</b> This system is designed solely as an educational and research demonstrator for the BITS Pilani MLOps course. "
+            "It is not intended for autonomous clinical decision-making or direct patient diagnostic therapy without physician validation.",
+            callout_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 2: ARCHITECTURE BLUEPRINT ====================
     story.append(Paragraph("1. High-Level MLOps System Architecture", h1_style))
-    story.append(Paragraph(
-        "The architecture adheres to four decoupled operational tiers: Data Ingestion & Preprocessing, Training & Governance, "
-        "Packaging & CI/CD Automation, and Serving & Telemetry Observability. The blueprint ensures deterministic repeatability, "
-        "sub-millisecond inference latencies, and real-time concept drift detection.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "The architecture adheres to four decoupled operational tiers: Data Ingestion & Preprocessing, Training & Governance, "
+            "Packaging & CI/CD Automation, and Serving & Telemetry Observability. The blueprint ensures deterministic repeatability, "
+            "sub-millisecond inference latencies, and real-time concept drift detection.",
+            body_style,
+        )
+    )
 
     arch_img_path = FIG_DIR / "architecture_diagram.png"
     if arch_img_path.exists():
         story.append(Image(str(arch_img_path), width=490, height=310))
     story.append(Spacer(1, 8))
 
-    story.append(Paragraph(
-        "<b>Key Architectural Features:</b><br/>"
-        "• <b>Zero-Leakage Transformer Pipelines:</b> Missing value imputers fit strictly on training cross-validation folds.<br/>"
-        "• <b>Centralized Governance:</b> MLflow logs hyperparameter grids, cross-validation metrics, confusion matrices, and pipelines.<br/>"
-        "• <b>Automated Continuous Integration:</b> GitHub Actions runs linting, 29 automated unit tests, and container builds on every commit.<br/>"
-        "• <b>Production Kubernetes Serving:</b> 3-replica rolling deployment with LoadBalancer service, Ingress routing, and Horizontal Pod Autoscaling.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "<b>Key Architectural Features:</b><br/>"
+            "• <b>Zero-Leakage Transformer Pipelines:</b> Missing value imputers fit strictly on training cross-validation folds.<br/>"
+            "• <b>Centralized Governance:</b> MLflow logs hyperparameter grids, cross-validation metrics, confusion matrices, and pipelines.<br/>"
+            "• <b>Automated Continuous Integration:</b> GitHub Actions runs linting, 29 automated unit tests, and container builds on every commit.<br/>"
+            "• <b>Production Kubernetes Serving:</b> 3-replica rolling deployment with LoadBalancer service, Ingress routing, and Horizontal Pod Autoscaling.",
+            body_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 3: DATASET & DATA QUALITY ====================
     story.append(Paragraph("2. Dataset Attribution, Clinical Schema & Data Validation", h1_style))
-    story.append(Paragraph(
-        "The project utilizes the canonical Cleveland Clinic Foundation variant of the Heart Disease UCI dataset, collected by "
-        "Dr. Robert Detrano (Cleveland Clinic and Long Beach V.A.) and distributed under CC BY 4.0 license via the UCI ML Repository.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "The project utilizes the canonical Cleveland Clinic Foundation variant of the Heart Disease UCI dataset, collected by "
+            "Dr. Robert Detrano (Cleveland Clinic and Long Beach V.A.) and distributed under CC BY 4.0 license via the UCI ML Repository.",
+            body_style,
+        )
+    )
 
     schema_data = [
         ["Attribute", "Clinical Interpretation", "Type", "Range / Meaning"],
@@ -244,37 +279,45 @@ def build_pdf():
         ["slope", "Peak Exercise ST Slope", "Ordinal", "1: Upsloping, 2: Flat, 3: Downsloping"],
         ["ca", "Major Fluoroscopy Vessels", "Ordinal", "0 – 3 vessels colored (4 missing values)"],
         ["thal", "Thalassemia Scintigraphy", "Nominal", "3: Normal, 6: Fixed, 7: Reversible (2 missing)"],
-        ["target", "Coronary Stenosis Status", "Binary", "0: Absence (<50%), 1: Presence (>50% narrowing)"]
+        ["target", "Coronary Stenosis Status", "Binary", "0: Absence (<50%), 1: Presence (>50% narrowing)"],
     ]
     schema_table = Table(schema_data, colWidths=[65, 155, 60, 220])
-    schema_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a365d")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, -1), 8),
-        ("PADDING", (0, 0), (-1, -1), 3),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f7fafc")])
-    ]))
+    schema_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a365d")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("PADDING", (0, 0), (-1, -1), 3),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
+                ("ROWBACKGROUNDS", (0, 1), (-1, -1), [colors.white, colors.HexColor("#f7fafc")]),
+            ]
+        )
+    )
     story.append(schema_table)
     story.append(Spacer(1, 8))
 
     story.append(Paragraph("Target Formulation & Cleaning Decisions", h2_style))
-    story.append(Paragraph(
-        "• <b>Target Binarization:</b> The raw dataset scores vessel disease from 0 to 4. We mapped 0 to class 0 (absence) "
-        "and {1, 2, 3, 4} to class 1 (disease present), establishing a balanced distribution (164 negative vs 139 positive).<br/>"
-        "• <b>Duplicates & Missingness:</b> Verified zero duplicate records. Retained 6 missing cells (ca: 4, thal: 2) as NaN "
-        "for pipeline imputation during training, preventing test leakage.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "• <b>Target Binarization:</b> The raw dataset scores vessel disease from 0 to 4. We mapped 0 to class 0 (absence) "
+            "and {1, 2, 3, 4} to class 1 (disease present), establishing a balanced distribution (164 negative vs 139 positive).<br/>"
+            "• <b>Duplicates & Missingness:</b> Verified zero duplicate records. Retained 6 missing cells (ca: 4, thal: 2) as NaN "
+            "for pipeline imputation during training, preventing test leakage.",
+            body_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 4: EXPLORATORY DATA ANALYSIS ====================
     story.append(Paragraph("3. Exploratory Data Analysis & Diagnostic Biomarker Patterns", h1_style))
-    story.append(Paragraph(
-        "Exploratory analysis in <code>notebooks/01_heart_disease_eda.ipynb</code> uncovered significant physiological predictors.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "Exploratory analysis in <code>notebooks/01_heart_disease_eda.ipynb</code> uncovered significant physiological predictors.",
+            body_style,
+        )
+    )
 
     t_img = FIG_DIR / "01_target_distribution.png"
     if t_img.exists():
@@ -286,11 +329,13 @@ def build_pdf():
         story.append(Image(str(h_img), width=480, height=240))
     story.append(Spacer(1, 6))
 
-    story.append(Paragraph(
-        "<b>Clinical Observations:</b> Max heart rate achieved (<code>thalach</code>) exhibits marked separation (mean 158 bpm in healthy "
-        "vs 139 bpm in cardiac patients). Exercise ST depression (<code>oldpeak</code>) demonstrates strong right skew with elevated values in diseased patients.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "<b>Clinical Observations:</b> Max heart rate achieved (<code>thalach</code>) exhibits marked separation (mean 158 bpm in healthy "
+            "vs 139 bpm in cardiac patients). Exercise ST depression (<code>oldpeak</code>) demonstrates strong right skew with elevated values in diseased patients.",
+            body_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 5: CORRELATION & RISK ASSOCIATIONS ====================
@@ -301,40 +346,56 @@ def build_pdf():
         story.append(Image(str(c_img), width=440, height=310))
     story.append(Spacer(1, 8))
 
-    story.append(Paragraph(
-        "<b>Key Spearman Correlation Findings:</b><br/>"
-        "• <b>Max Heart Rate (thalach, rho = -0.42):</b> Demonstrates strong protective correlation with absence of disease.<br/>"
-        "• <b>ST Depression (oldpeak, rho = +0.42):</b> Positive correlation indicates exercise-induced ischemia.<br/>"
-        "• <b>Major Vessels Colored (ca, rho = +0.46):</b> Strongest single anatomical predictor of angiographic stenosis.<br/>"
-        "• <b>Asymptomatic Chest Pain Paradox:</b> Category 4 chest pain carries the highest disease prevalence (>72%), reflecting diagnostic referral patterns.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "<b>Key Spearman Correlation Findings:</b><br/>"
+            "• <b>Max Heart Rate (thalach, rho = -0.42):</b> Demonstrates strong protective correlation with absence of disease.<br/>"
+            "• <b>ST Depression (oldpeak, rho = +0.42):</b> Positive correlation indicates exercise-induced ischemia.<br/>"
+            "• <b>Major Vessels Colored (ca, rho = +0.46):</b> Strongest single anatomical predictor of angiographic stenosis.<br/>"
+            "• <b>Asymptomatic Chest Pain Paradox:</b> Category 4 chest pain carries the highest disease prevalence (>72%), reflecting diagnostic referral patterns.",
+            body_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 6: MODEL TRAINING & SELECTION ====================
     story.append(Paragraph("5. Model Development, Hyperparameter Tuning & Selection", h1_style))
-    story.append(Paragraph(
-        "We trained and tuned three candidate pipelines using Stratified 5-Fold Cross-Validation on 242 training instances, "
-        "evaluating the final models on 61 held-out test instances.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "We trained and tuned three candidate pipelines using Stratified 5-Fold Cross-Validation on 242 training instances, "
+            "evaluating the final models on 61 held-out test instances.",
+            body_style,
+        )
+    )
 
     perf_data = [
-        ["Model Architecture", "5-Fold CV AUC", "Test Accuracy", "Test Recall", "Test F1", "Test ROC-AUC", "False Negatives"],
+        [
+            "Model Architecture",
+            "5-Fold CV AUC",
+            "Test Accuracy",
+            "Test Recall",
+            "Test F1",
+            "Test ROC-AUC",
+            "False Negatives",
+        ],
         ["Logistic Regression (L2, C=5.0)", "0.9029", "86.89%", "89.29%", "0.8621", "0.9632", "3 / 28"],
         ["Random Forest (depth=5, n=100)", "0.9027", "88.52%", "89.29%", "0.8772", "0.9470", "3 / 28"],
-        ["Gradient Boosting (lr=0.01, n=100)", "0.8847", "86.89%", "85.71%", "0.8571", "0.9280", "4 / 28"]
+        ["Gradient Boosting (lr=0.01, n=100)", "0.8847", "86.89%", "85.71%", "0.8571", "0.9280", "4 / 28"],
     ]
     perf_table = Table(perf_data, colWidths=[160, 65, 55, 55, 50, 60, 65])
-    perf_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a365d")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, -1), 8),
-        ("PADDING", (0, 0), (-1, -1), 4),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ("BACKGROUND", (0, 1), (-1, 1), colors.HexColor("#e8f4fd"))  # winning row
-    ]))
+    perf_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a365d")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 8),
+                ("PADDING", (0, 0), (-1, -1), 4),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
+                ("BACKGROUND", (0, 1), (-1, 1), colors.HexColor("#e8f4fd")),  # winning row
+            ]
+        )
+    )
     story.append(perf_table)
     story.append(Spacer(1, 8))
 
@@ -348,19 +409,23 @@ def build_pdf():
         story.append(pair_table)
 
     story.append(Spacer(1, 6))
-    story.append(Paragraph(
-        "<b>Model Justification:</b> Logistic Regression was chosen as the primary production serving model due to its outstanding "
-        "ROC-AUC (0.9632), identical high recall (89.29%, only 3 false negatives), calibrated probability outputs, and sub-millisecond execution.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "<b>Model Justification:</b> Logistic Regression was chosen as the primary production serving model due to its outstanding "
+            "ROC-AUC (0.9632), identical high recall (89.29%, only 3 false negatives), calibrated probability outputs, and sub-millisecond execution.",
+            body_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 7: MLFLOW & TESTING ====================
     story.append(Paragraph("6. MLflow Experiment Tracking & Automated Pytest Suite", h1_style))
-    story.append(Paragraph(
-        "MLflow tracks all candidate runs, hyperparameters, metrics, and serialized pipelines under <code>mlruns/</code>.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "MLflow tracks all candidate runs, hyperparameters, metrics, and serialized pipelines under <code>mlruns/</code>.",
+            body_style,
+        )
+    )
 
     mlflow_img = SHOTS_DIR / "01_mlflow_experiments.png"
     if mlflow_img.exists():
@@ -368,24 +433,28 @@ def build_pdf():
     story.append(Spacer(1, 8))
 
     story.append(Paragraph("Automated Testing Suite (29 Unit & Integration Tests)", h2_style))
-    story.append(Paragraph(
-        "The test suite in <code>tests/</code> achieved a 100% pass rate in 14.54s:<br/>"
-        "• <code>test_data.py</code> (4 tests): Schema validation, missing value preservation, binary target encoding, and deduplication.<br/>"
-        "• <code>test_features.py</code> (3 tests): Preprocessor fitting, output shapes, and stratified split disjointness.<br/>"
-        "• <code>test_model.py</code> (5 tests): Pipeline loading, single inference schema, probability calibration, missing field handling.<br/>"
-        "• <code>test_config.py</code> (3 tests): Centralized configuration defaults, dynamic relative path resolution, and env overrides.<br/>"
-        "• <code>test_drift.py</code> (5 tests): Population Stability Index (PSI), Kolmogorov-Smirnov continuous tests, baseline distribution.<br/>"
-        "• <code>test_api.py</code> (9 tests): Endpoints /health, /metrics, /predict, /predict/batch, /drift status/evaluation, and HTTP 422 errors.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "The test suite in <code>tests/</code> achieved a 100% pass rate in 14.54s:<br/>"
+            "• <code>test_data.py</code> (4 tests): Schema validation, missing value preservation, binary target encoding, and deduplication.<br/>"
+            "• <code>test_features.py</code> (3 tests): Preprocessor fitting, output shapes, and stratified split disjointness.<br/>"
+            "• <code>test_model.py</code> (5 tests): Pipeline loading, single inference schema, probability calibration, missing field handling.<br/>"
+            "• <code>test_config.py</code> (3 tests): Centralized configuration defaults, dynamic relative path resolution, and env overrides.<br/>"
+            "• <code>test_drift.py</code> (5 tests): Population Stability Index (PSI), Kolmogorov-Smirnov continuous tests, baseline distribution.<br/>"
+            "• <code>test_api.py</code> (9 tests): Endpoints /health, /metrics, /predict, /predict/batch, /drift status/evaluation, and HTTP 422 errors.",
+            body_style,
+        )
+    )
     story.append(PageBreak())
 
     # ==================== PAGE 8: CONTAINERIZATION & SERVING ====================
     story.append(Paragraph("7. Model Containerization (Docker) & FastAPI Serving", h1_style))
-    story.append(Paragraph(
-        "The application is packaged into a hardened, non-root Docker container running FastAPI with Pydantic v2 schemas.",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "The application is packaged into a hardened, non-root Docker container running FastAPI with Pydantic v2 schemas.",
+            body_style,
+        )
+    )
 
     docker_img = SHOTS_DIR / "02_docker_container_verification.png"
     if docker_img.exists():
@@ -399,10 +468,12 @@ def build_pdf():
 
     # ==================== PAGE 9: KUBERNETES & MONITORING ====================
     story.append(Paragraph("8. Kubernetes Orchestration & Observability (Prometheus + Grafana)", h1_style))
-    story.append(Paragraph(
-        "Production deployment is codified via Kubernetes manifests (<code>k8s/</code>) and a configurable Helm chart (<code>helm/</code>).",
-        body_style
-    ))
+    story.append(
+        Paragraph(
+            "Production deployment is codified via Kubernetes manifests (<code>k8s/</code>) and a configurable Helm chart (<code>helm/</code>).",
+            body_style,
+        )
+    )
 
     k8s_img = SHOTS_DIR / "04_kubernetes_deployment_status.png"
     if k8s_img.exists():
@@ -428,29 +499,39 @@ def build_pdf():
         ["1. Data Acquisition & EDA", "5", "Verified", "download_data.py, clean_data.py, 01_heart_disease_eda.ipynb"],
         ["2. Feature Engineering & Training", "8", "Verified", "build_features.py, train.py, evaluate.py (AUC=0.9632)"],
         ["3. Experiment Tracking", "5", "Verified", "MLflow integrated (mlruns/), metrics & artifacts logged"],
-        ["4. Model Packaging & Reproducibility", "7", "Verified", "models/model_pipeline.joblib, requirements.txt, predict.py"],
+        [
+            "4. Model Packaging & Reproducibility",
+            "7",
+            "Verified",
+            "models/model_pipeline.joblib, requirements.txt, predict.py",
+        ],
         ["5. CI/CD Pipeline & Testing", "8", "Verified", "29 Pytest unit tests (100% pass), .github/workflows/ci.yml"],
         ["6. Model Containerization", "5", "Verified", "Dockerfile (non-root), test_docker.sh live verification"],
         ["7. Production Deployment", "7", "Verified", "k8s/ manifests, helm/ chart, LoadBalancer, Ingress, HPA"],
         ["8. Monitoring & Logging", "3", "Verified", "Structured JSON logging, Prometheus /metrics, Grafana dashboard"],
         ["9. Documentation & Reporting", "2", "Verified", "10-Page PDF Report, README.md, Architecture diagrams"],
-        ["TOTAL", "50", "100%", "Complete, Reproducible End-to-End Enterprise System"]
+        ["TOTAL", "50", "100%", "Complete, Reproducible End-to-End Enterprise System"],
     ]
     chk_table = Table(chk_data, colWidths=[150, 40, 55, 255])
-    chk_table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a365d")),
-        ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
-        ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
-        ("FONTSIZE", (0, 0), (-1, -1), 7.5),
-        ("PADDING", (0, 0), (-1, -1), 3),
-        ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
-        ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#e2e8f0")),
-        ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold")
-    ]))
+    chk_table.setStyle(
+        TableStyle(
+            [
+                ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#1a365d")),
+                ("TEXTCOLOR", (0, 0), (-1, 0), colors.white),
+                ("FONTNAME", (0, 0), (-1, 0), "Helvetica-Bold"),
+                ("FONTSIZE", (0, 0), (-1, -1), 7.5),
+                ("PADDING", (0, 0), (-1, -1), 3),
+                ("GRID", (0, 0), (-1, -1), 0.5, colors.HexColor("#cbd5e0")),
+                ("BACKGROUND", (0, -1), (-1, -1), colors.HexColor("#e2e8f0")),
+                ("FONTNAME", (0, -1), (-1, -1), "Helvetica-Bold"),
+            ]
+        )
+    )
     story.append(chk_table)
 
     doc.build(story, canvasmaker=NumberedCanvas)
     print(f"Successfully compiled 10-page academic report to: {OUTPUT_PDF}")
+
 
 if __name__ == "__main__":
     build_pdf()

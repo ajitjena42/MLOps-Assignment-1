@@ -30,15 +30,14 @@ logger = logging.getLogger("drift")
 
 
 def generate_baseline_distribution(
-    data_path: str | Path | None = None,
-    output_path: str | Path | None = None
+    data_path: str | Path | None = None, output_path: str | Path | None = None
 ) -> dict[str, Any]:
     """Compute and persist summary baseline statistics from cleaned training data.
-    
+
     Args:
         data_path: Path to cleaned training CSV.
         output_path: Destination path for serialized baseline JSON.
-        
+
     Returns:
         Dictionary containing baseline statistics for all features.
     """
@@ -57,9 +56,9 @@ def generate_baseline_distribution(
         "target_distribution": {
             "negative_count": int((df["target"] == 0).sum()),
             "positive_count": int((df["target"] == 1).sum()),
-            "prevalence_rate": round(float((df["target"] == 1).mean()), 4)
+            "prevalence_rate": round(float((df["target"] == 1).mean()), 4),
         },
-        "features": {}
+        "features": {},
     }
 
     # 1. Numerical Feature Distributions
@@ -78,7 +77,7 @@ def generate_baseline_distribution(
             # Representative quantiles for reference comparison
             "quantiles": [round(float(q), 4) for q in series.quantile(np.linspace(0.05, 0.95, 19)).tolist()],
             # Store values for KS-test comparison
-            "values": [round(float(v), 2) for v in series.tolist()]
+            "values": [round(float(v), 2) for v in series.tolist()],
         }
 
     # 2. Categorical Feature Distributions
@@ -88,7 +87,7 @@ def generate_baseline_distribution(
         baseline["features"][col] = {
             "type": "categorical",
             "count": len(series),
-            "frequencies": {str(k): round(float(v), 4) for k, v in counts.items()}
+            "frequencies": {str(k): round(float(v), 4) for k, v in counts.items()},
         }
 
     out_file.parent.mkdir(parents=True, exist_ok=True)
@@ -112,7 +111,7 @@ def load_baseline_distribution(stats_path: str | Path | None = None) -> dict[str
 
 def calculate_psi(expected_probs: dict[str, float], actual_probs: dict[str, float], epsilon: float = 1e-4) -> float:
     """Calculate Population Stability Index (PSI) between two categorical probability distributions.
-    
+
     PSI interpretation:
     - PSI < 0.1: No significant distribution change.
     - 0.1 <= PSI < 0.2: Moderate shift / warning.
@@ -135,16 +134,16 @@ def compute_drift(
     batch_records: list[dict[str, Any]],
     baseline_stats: dict[str, Any] | None = None,
     p_value_threshold: float | None = None,
-    psi_threshold: float | None = None
+    psi_threshold: float | None = None,
 ) -> dict[str, Any]:
     """Evaluate statistical feature drift between incoming batch and baseline profile.
-    
+
     Args:
         batch_records: List of patient attribute dictionaries.
         baseline_stats: Pre-loaded baseline profile dictionary.
         p_value_threshold: KS test threshold for numerical drift (default 0.05).
         psi_threshold: PSI threshold for categorical drift (default 0.20).
-        
+
     Returns:
         Structured drift assessment report.
     """
@@ -152,7 +151,7 @@ def compute_drift(
         return {
             "status": "error",
             "message": "Empty batch records provided for drift evaluation.",
-            "drift_detected": False
+            "drift_detected": False,
         }
 
     p_thresh = p_value_threshold if p_value_threshold is not None else settings.DRIFT_PVALUE_THRESHOLD
@@ -196,13 +195,13 @@ def compute_drift(
                     "drift_detected": is_drift,
                     "status": severity,
                     "sample_mean": round(float(np.mean(sample_vals)), 4),
-                    "baseline_mean": base_feat["mean"]
+                    "baseline_mean": base_feat["mean"],
                 }
             else:
                 feature_metrics[col] = {
                     "feature_type": "numerical",
                     "status": "INSUFFICIENT_SAMPLES",
-                    "drift_detected": False
+                    "drift_detected": False,
                 }
 
         elif feat_type == "categorical":
@@ -225,7 +224,7 @@ def compute_drift(
                 "drift_detected": is_drift,
                 "status": severity,
                 "sample_frequencies": {str(k): round(float(v), 4) for k, v in actual_counts.items()},
-                "baseline_frequencies": expected_freqs
+                "baseline_frequencies": expected_freqs,
             }
 
     overall_drift_detected = len(drifted_features) > 0
@@ -239,5 +238,5 @@ def compute_drift(
         "drifted_features": drifted_features,
         "drift_ratio": drift_ratio,
         "baseline_reference": baseline_stats.get("dataset_name", "UCI Cleveland"),
-        "feature_metrics": feature_metrics
+        "feature_metrics": feature_metrics,
     }

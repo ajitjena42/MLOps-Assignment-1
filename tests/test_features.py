@@ -17,22 +17,24 @@ def sample_features_df():
     """Create reproducible sample dataframe for transformer tests."""
     np.random.seed(42)
     n = 50
-    return pd.DataFrame({
-        "age": np.random.uniform(30, 75, n),
-        "sex": np.random.choice([0.0, 1.0], n),
-        "cp": np.random.choice([1.0, 2.0, 3.0, 4.0], n),
-        "trestbps": np.random.uniform(90, 180, n),
-        "chol": np.random.uniform(150, 400, n),
-        "fbs": np.random.choice([0.0, 1.0], n),
-        "restecg": np.random.choice([0.0, 1.0, 2.0], n),
-        "thalach": np.random.uniform(80, 200, n),
-        "exang": np.random.choice([0.0, 1.0], n),
-        "oldpeak": np.random.uniform(0.0, 5.0, n),
-        "slope": np.random.choice([1.0, 2.0, 3.0], n),
-        "ca": np.random.choice([0.0, 1.0, 2.0, 3.0], n),
-        "thal": np.random.choice([3.0, 6.0, 7.0], n),
-        "target": np.random.choice([0, 1], n)
-    })
+    return pd.DataFrame(
+        {
+            "age": np.random.uniform(30, 75, n),
+            "sex": np.random.choice([0.0, 1.0], n),
+            "cp": np.random.choice([1.0, 2.0, 3.0, 4.0], n),
+            "trestbps": np.random.uniform(90, 180, n),
+            "chol": np.random.uniform(150, 400, n),
+            "fbs": np.random.choice([0.0, 1.0], n),
+            "restecg": np.random.choice([0.0, 1.0, 2.0], n),
+            "thalach": np.random.uniform(80, 200, n),
+            "exang": np.random.choice([0.0, 1.0], n),
+            "oldpeak": np.random.uniform(0.0, 5.0, n),
+            "slope": np.random.choice([1.0, 2.0, 3.0], n),
+            "ca": np.random.choice([0.0, 1.0, 2.0, 3.0], n),
+            "thal": np.random.choice([3.0, 6.0, 7.0], n),
+            "target": np.random.choice([0, 1], n),
+        }
+    )
 
 
 def test_preprocessor_fitting(sample_features_df):

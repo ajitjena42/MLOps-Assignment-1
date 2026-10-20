@@ -24,7 +24,7 @@ _MODEL = None
 
 def load_model(model_path: str | Path | None = None, reload: bool = False):
     """Load and cache the trained pipeline across joblib, pickle, or MLflow formats.
-    
+
     Args:
         model_path: Optional path to serialized model artifact.
         reload: If True, forces reloading artifact from disk into memory.
@@ -41,9 +41,11 @@ def load_model(model_path: str | Path | None = None, reload: bool = False):
         logger.info(f"Loading production pipeline from {path.resolve()}")
         if path.is_dir() and (path / "MLmodel").exists():
             import mlflow.pyfunc
+
             _MODEL = mlflow.pyfunc.load_model(str(path))
         elif str(path).endswith(".pkl"):
             import pickle
+
             with open(path, "rb") as f:
                 _MODEL = pickle.load(f)
         else:
@@ -52,17 +54,15 @@ def load_model(model_path: str | Path | None = None, reload: bool = False):
 
 
 def predict_single(
-    data: dict[str, Any],
-    model_path: str | Path | None = None,
-    pipeline: Any | None = None
+    data: dict[str, Any], model_path: str | Path | None = None, pipeline: Any | None = None
 ) -> dict[str, Any]:
     """Execute prediction on a single patient record.
-    
+
     Args:
         data: Dictionary of clinical features.
         model_path: Optional path to serialized joblib model pipeline.
         pipeline: Optional pre-loaded pipeline instance for zero-IO serving.
-        
+
     Returns:
         Structured prediction dictionary with class, label, probability, confidence.
     """
@@ -89,20 +89,15 @@ def predict_single(
         "label": label,
         "probability_disease": round(prob_disease, 4),
         "confidence": round(confidence, 4),
-        "probabilities": {
-            "absence": round(float(probas[0]), 4),
-            "presence": round(float(probas[1]), 4)
-        }
+        "probabilities": {"absence": round(float(probas[0]), 4), "presence": round(float(probas[1]), 4)},
     }
 
 
 def predict_batch(
-    records: list[dict[str, Any]],
-    model_path: str | Path | None = None,
-    pipeline: Any | None = None
+    records: list[dict[str, Any]], model_path: str | Path | None = None, pipeline: Any | None = None
 ) -> list[dict[str, Any]]:
     """Execute high-throughput batch predictions on a list of patient records.
-    
+
     Args:
         records: List of patient attribute dictionaries.
         model_path: Optional path to serialized model pipeline.
@@ -124,16 +119,15 @@ def predict_batch(
     for pred, prob in zip(preds, probas):
         p_class = int(pred)
         prob_disease = float(prob[1])
-        results.append({
-            "prediction": p_class,
-            "label": "Heart Disease Risk Detected" if p_class == 1 else "No Heart Disease Detected",
-            "probability_disease": round(prob_disease, 4),
-            "confidence": round(float(np.max(prob)), 4),
-            "probabilities": {
-                "absence": round(float(prob[0]), 4),
-                "presence": round(float(prob[1]), 4)
+        results.append(
+            {
+                "prediction": p_class,
+                "label": "Heart Disease Risk Detected" if p_class == 1 else "No Heart Disease Detected",
+                "probability_disease": round(prob_disease, 4),
+                "confidence": round(float(np.max(prob)), 4),
+                "probabilities": {"absence": round(float(prob[0]), 4), "presence": round(float(prob[1]), 4)},
             }
-        })
+        )
     return results
 
 
@@ -151,6 +145,6 @@ if __name__ == "__main__":
         "oldpeak": 2.3,
         "slope": 0.0,
         "ca": 0.0,
-        "thal": 1.0
+        "thal": 1.0,
     }
     print(json.dumps(predict_single(sample_input), indent=2))

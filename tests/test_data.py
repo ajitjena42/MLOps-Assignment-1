@@ -39,7 +39,7 @@ def test_clean_dataset_binary_target(tmp_path):
         "slope": [1.0, 2.0, 3.0, 1.0, 2.0],
         "ca": [0.0, 1.0, "?", 0.0, 2.0],
         "thal": [3.0, "?", 7.0, 3.0, 6.0],
-        "target": [0, 1, 2, 3, 4]  # test all target values
+        "target": [0, 1, 2, 3, 4],  # test all target values
     }
     pd.DataFrame(sample_data).to_csv(raw_csv, index=False)
     out_csv = tmp_path / "test_cleaned.csv"

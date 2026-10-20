@@ -7,6 +7,7 @@ from pydantic import BaseModel, ConfigDict, Field
 
 class PatientData(BaseModel):
     """Clinical features schema for a patient undergoing cardiovascular risk assessment."""
+
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
@@ -22,7 +23,7 @@ class PatientData(BaseModel):
                 "oldpeak": 2.3,
                 "slope": 0.0,
                 "ca": 0.0,
-                "thal": 1.0
+                "thal": 1.0,
             }
         }
     )
@@ -44,6 +45,7 @@ class PatientData(BaseModel):
 
 class BatchPatientData(BaseModel):
     """Payload container for batch predictions."""
+
     patients: list[PatientData] = Field(..., min_length=1, max_length=1000)
 
 
@@ -54,6 +56,7 @@ class Probabilities(BaseModel):
 
 class PredictionResponse(BaseModel):
     """Individual prediction response with confidence and latency metrics."""
+
     prediction: int = Field(..., description="Binary prediction: 0 (Absence) or 1 (Presence)")
     label: str = Field(..., description="Human-readable diagnosis label")
     probability_disease: float = Field(..., description="Calibrated risk probability of heart disease [0.0 - 1.0]")
@@ -80,11 +83,15 @@ class HealthResponse(BaseModel):
 
 class DriftEvaluationRequest(BaseModel):
     """Batch payload submitted for covariate and statistical feature drift evaluation."""
-    records: list[PatientData] = Field(..., min_length=1, max_length=2000, description="Batch records to evaluate against training baseline")
+
+    records: list[PatientData] = Field(
+        ..., min_length=1, max_length=2000, description="Batch records to evaluate against training baseline"
+    )
 
 
 class DriftReportResponse(BaseModel):
     """Statistical drift evaluation report."""
+
     drift_detected: bool = Field(..., description="True if any feature exceeds significance drift threshold")
     sample_size: int = Field(..., description="Number of records evaluated in current batch")
     total_features_evaluated: int

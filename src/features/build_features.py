@@ -4,7 +4,6 @@ Constructs scikit-learn ColumnTransformer pipelines combining imputation,
 standardization, and one-hot encoding without data leakage.
 """
 
-
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer
@@ -12,20 +11,16 @@ from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
-NUMERICAL_FEATURES: list[str] = [
-    "age", "trestbps", "chol", "thalach", "oldpeak"
-]
+NUMERICAL_FEATURES: list[str] = ["age", "trestbps", "chol", "thalach", "oldpeak"]
 
-CATEGORICAL_FEATURES: list[str] = [
-    "sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"
-]
+CATEGORICAL_FEATURES: list[str] = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"]
 
 ALL_FEATURE_COLUMNS: list[str] = NUMERICAL_FEATURES + CATEGORICAL_FEATURES
 
 
 def get_preprocessor() -> ColumnTransformer:
     """Build a reusable ColumnTransformer for numerical scaling and categorical encoding.
-    
+
     Returns:
         Fitted or unfitted ColumnTransformer object.
     """
@@ -67,19 +62,16 @@ def get_feature_names(preprocessor: ColumnTransformer) -> list[str]:
 
 
 def prepare_train_test_data(
-    df: pd.DataFrame,
-    target_col: str = "target",
-    test_size: float = 0.2,
-    random_state: int = 42
+    df: pd.DataFrame, target_col: str = "target", test_size: float = 0.2, random_state: int = 42
 ) -> tuple[pd.DataFrame, pd.DataFrame, pd.Series, pd.Series]:
     """Split dataset into stratified training and testing sets.
-    
+
     Args:
         df: Input cleaned dataframe.
         target_col: Name of binary target column.
         test_size: Fraction reserved for held-out evaluation (default: 0.2).
         random_state: Random seed for deterministic reproducibility.
-        
+
     Returns:
         X_train, X_test, y_train, y_test
     """
@@ -89,10 +81,7 @@ def prepare_train_test_data(
     y = df[target_col].copy()
 
     X_train, X_test, y_train, y_test = train_test_split(
-        X, y,
-        test_size=test_size,
-        stratify=y,
-        random_state=random_state
+        X, y, test_size=test_size, stratify=y, random_state=random_state
     )
 
     return X_train, X_test, y_train, y_test

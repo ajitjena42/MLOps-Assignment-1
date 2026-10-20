@@ -62,7 +62,7 @@ def test_compute_drift_in_baseline():
         "oldpeak": baseline["features"]["oldpeak"]["mean"],
         "slope": 1.0,
         "ca": 0.0,
-        "thal": 3.0
+        "thal": 3.0,
     }
     batch = [normal_patient] * 10
     report = compute_drift(batch, baseline_stats=baseline)
@@ -90,7 +90,7 @@ def test_compute_drift_detects_severe_shift():
         "oldpeak": 8.5,
         "slope": 3.0,
         "ca": 3.0,
-        "thal": 7.0
+        "thal": 7.0,
     }
     batch = [outlier_patient] * 30
     report = compute_drift(batch, baseline_stats=baseline)

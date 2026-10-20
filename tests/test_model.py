@@ -23,7 +23,7 @@ def valid_patient_payload():
         "oldpeak": 0.8,
         "slope": 1.0,
         "ca": 0.0,
-        "thal": 7.0
+        "thal": 7.0,
     }
 
 
@@ -57,7 +57,7 @@ def test_predict_single_with_missing_fields():
     incomplete_payload = {
         "age": 62.0,
         "sex": 0.0,
-        "cp": 2.0
+        "cp": 2.0,
         # remaining features intentionally omitted
     }
     res = predict_single(incomplete_payload)

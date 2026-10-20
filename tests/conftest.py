@@ -1,4 +1,5 @@
 """Pytest global configuration and environment setup."""
+
 import os
 import sys
 from pathlib import Path

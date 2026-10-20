@@ -7,7 +7,7 @@ from typing import Any
 import matplotlib
 import numpy as np
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import (
@@ -27,12 +27,12 @@ os.environ["MPLCONFIGDIR"] = str(MPL_DIR)
 
 def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_proba: np.ndarray = None) -> dict[str, Any]:
     """Calculate standard and healthcare-specific diagnostic performance metrics.
-    
+
     Args:
         y_true: Ground truth binary labels (0 or 1).
         y_pred: Predicted binary labels (0 or 1).
         y_proba: Predicted probability of positive class (Class 1).
-        
+
     Returns:
         Dictionary of performance metrics.
     """
@@ -62,14 +62,9 @@ def compute_metrics(y_true: np.ndarray, y_pred: np.ndarray, y_proba: np.ndarray 
     return metrics
 
 
-def plot_confusion_matrix(
-    y_true: np.ndarray,
-    y_pred: np.ndarray,
-    model_name: str,
-    output_path: Path
-) -> Path:
+def plot_confusion_matrix(y_true: np.ndarray, y_pred: np.ndarray, model_name: str, output_path: Path) -> Path:
     """Plot publication-quality confusion matrix highlighting clinical implications.
-    
+
     Args:
         y_true: Ground truth binary labels.
         y_pred: Predicted labels.
@@ -81,10 +76,12 @@ def plot_confusion_matrix(
     tn, fp, fn, tp = cm.ravel()
 
     fig, ax = plt.subplots(figsize=(6, 5))
-    annot = np.array([
-        [f"TN\n{tn}\n({tn/(tn+fp)*100:.1f}%)", f"FP (Type I)\n{fp}\n({fp/(tn+fp)*100:.1f}%)"],
-        [f"FN (Type II)\n{fn}\n({fn/(fn+tp)*100:.1f}%)", f"TP\n{tp}\n({tp/(fn+tp)*100:.1f}%)"]
-    ])
+    annot = np.array(
+        [
+            [f"TN\n{tn}\n({tn / (tn + fp) * 100:.1f}%)", f"FP (Type I)\n{fp}\n({fp / (tn + fp) * 100:.1f}%)"],
+            [f"FN (Type II)\n{fn}\n({fn / (fn + tp) * 100:.1f}%)", f"TP\n{tp}\n({tp / (fn + tp) * 100:.1f}%)"],
+        ]
+    )
 
     sns.heatmap(
         cm,
@@ -95,7 +92,7 @@ def plot_confusion_matrix(
         xticklabels=["Absence (0)", "Disease Risk (1)"],
         yticklabels=["Absence (0)", "Disease Risk (1)"],
         ax=ax,
-        annot_kws={"fontsize": 11, "weight": "bold"}
+        annot_kws={"fontsize": 11, "weight": "bold"},
     )
 
     ax.set_title(f"Confusion Matrix - {model_name}\n(Held-Out Test Set, N={len(y_true)})", pad=12)
@@ -107,12 +104,9 @@ def plot_confusion_matrix(
     return output_path
 
 
-def plot_roc_curves(
-    models_roc_data: dict[str, tuple[np.ndarray, np.ndarray, float]],
-    output_path: Path
-) -> Path:
+def plot_roc_curves(models_roc_data: dict[str, tuple[np.ndarray, np.ndarray, float]], output_path: Path) -> Path:
     """Plot overlaid ROC curves comparing multiple candidate models.
-    
+
     Args:
         models_roc_data: Dictionary mapping model_name -> (fpr, tpr, roc_auc).
         output_path: Destination image path.
@@ -139,11 +133,7 @@ def plot_roc_curves(
 
 
 def plot_feature_importance(
-    feature_names: list,
-    importances: np.ndarray,
-    model_name: str,
-    output_path: Path,
-    title: str = "Feature Importance"
+    feature_names: list, importances: np.ndarray, model_name: str, output_path: Path, title: str = "Feature Importance"
 ) -> Path:
     """Plot sorted top feature importances or model coefficients."""
     output_path.parent.mkdir(parents=True, exist_ok=True)

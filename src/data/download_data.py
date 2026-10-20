@@ -20,10 +20,7 @@ from pathlib import Path
 
 import pandas as pd
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("download_data")
 
 UCI_URL = "https://archive.ics.uci.edu/ml/machine-learning-databases/heart-disease/processed.cleveland.data"
@@ -31,30 +28,30 @@ FALLBACK_URL = "https://raw.githubusercontent.com/stedy/Machine-Learning-with-R-
 
 # Official 14 clinical attributes used in machine learning research
 COLUMN_NAMES = [
-    "age",       # Age in years
-    "sex",       # Sex (1 = male, 0 = female)
-    "cp",        # Chest pain type (1: typical angina, 2: atypical angina, 3: non-anginal pain, 4: asymptomatic)
+    "age",  # Age in years
+    "sex",  # Sex (1 = male, 0 = female)
+    "cp",  # Chest pain type (1: typical angina, 2: atypical angina, 3: non-anginal pain, 4: asymptomatic)
     "trestbps",  # Resting blood pressure in mm Hg
-    "chol",      # Serum cholesterol in mg/dl
-    "fbs",       # Fasting blood sugar > 120 mg/dl (1 = true, 0 = false)
-    "restecg",   # Resting electrocardiographic results (0, 1, 2)
-    "thalach",   # Maximum heart rate achieved
-    "exang",     # Exercise induced angina (1 = yes, 0 = no)
-    "oldpeak",   # ST depression induced by exercise relative to rest
-    "slope",     # Slope of peak exercise ST segment (1: upsloping, 2: flat, 3: downsloping)
-    "ca",        # Number of major vessels (0-3) colored by fluoroscopy
-    "thal",      # Thalassemia (3 = normal, 6 = fixed defect, 7 = reversible defect)
-    "target"     # Heart disease diagnosis (0: absence, 1-4: presence)
+    "chol",  # Serum cholesterol in mg/dl
+    "fbs",  # Fasting blood sugar > 120 mg/dl (1 = true, 0 = false)
+    "restecg",  # Resting electrocardiographic results (0, 1, 2)
+    "thalach",  # Maximum heart rate achieved
+    "exang",  # Exercise induced angina (1 = yes, 0 = no)
+    "oldpeak",  # ST depression induced by exercise relative to rest
+    "slope",  # Slope of peak exercise ST segment (1: upsloping, 2: flat, 3: downsloping)
+    "ca",  # Number of major vessels (0-3) colored by fluoroscopy
+    "thal",  # Thalassemia (3 = normal, 6 = fixed defect, 7 = reversible defect)
+    "target",  # Heart disease diagnosis (0: absence, 1-4: presence)
 ]
 
 
 def download_dataset(output_path: str = "data/raw/heart.csv", force: bool = False) -> Path:
     """Download the raw UCI Heart Disease dataset.
-    
+
     Args:
         output_path: Destination path for the raw CSV.
         force: If True, redownload even if file exists.
-        
+
     Returns:
         Path to the downloaded file.
     """

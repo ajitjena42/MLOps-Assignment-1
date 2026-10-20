@@ -43,41 +43,37 @@ from src.models.predict import _MODEL, load_model, predict_batch, predict_single
 # Configure logging
 logging.basicConfig(
     level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO),
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
+    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 logger = logging.getLogger("api")
 
 # ==================== PROMETHEUS METRICS ====================
 HTTP_REQUESTS_TOTAL = Counter(
-    "heart_disease_api_requests_total",
-    "Total count of HTTP requests received",
-    ["method", "endpoint", "status_code"]
+    "heart_disease_api_requests_total", "Total count of HTTP requests received", ["method", "endpoint", "status_code"]
 )
 PREDICTIONS_TOTAL = Counter(
     "heart_disease_predictions_total",
     "Total predictions broken down by clinical risk classification",
-    ["prediction_class", "diagnosis_label"]
+    ["prediction_class", "diagnosis_label"],
 )
 INFERENCE_LATENCY_SECONDS = Histogram(
     "heart_disease_inference_latency_seconds",
     "Time spent executing model pipeline inference",
-    buckets=[0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0]
+    buckets=[0.001, 0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1.0],
 )
 DISEASE_PROBABILITY_SUMMARY = Summary(
-    "heart_disease_risk_probability",
-    "Estimated probability of positive disease diagnosis"
+    "heart_disease_risk_probability", "Estimated probability of positive disease diagnosis"
 )
 MODEL_STATUS_GAUGE = Gauge(
     "heart_disease_model_loaded",
-    "Status indicator showing whether machine learning pipeline is loaded (1 = Loaded, 0 = Failed)"
+    "Status indicator showing whether machine learning pipeline is loaded (1 = Loaded, 0 = Failed)",
 )
 DRIFT_DETECTED_GAUGE = Gauge(
     "heart_disease_drift_detected",
-    "Binary indicator showing whether statistical feature drift is detected (1 = Drift Detected, 0 = In Baseline)"
+    "Binary indicator showing whether statistical feature drift is detected (1 = Drift Detected, 0 = In Baseline)",
 )
 DRIFT_RATIO_GAUGE = Gauge(
-    "heart_disease_drift_ratio",
-    "Proportion of evaluated features exhibiting statistically significant drift"
+    "heart_disease_drift_ratio", "Proportion of evaluated features exhibiting statistically significant drift"
 )
 
 # Application Lifecycle Counters
@@ -128,7 +124,7 @@ app = FastAPI(
     version=settings.MODEL_VERSION,
     docs_url="/docs",
     redoc_url="/redoc",
-    lifespan=lifespan
+    lifespan=lifespan,
 )
 
 # Attach custom structured logging middleware
@@ -166,15 +162,15 @@ def root(request: Request):
         "endpoints": {
             "predict_single": "POST /predict",
             "predict_batch": "POST /predict/batch",
-            "drift_evaluation": "POST /drift"
-        }
+            "drift_evaluation": "POST /drift",
+        },
     }
 
 
 @app.get("/health", response_model=HealthResponse, tags=["Monitoring"])
 def health(request: Request):
     """Liveness and readiness probe for Kubernetes and Docker health checks.
-    
+
     Checks in-memory application state with fallback to cached loader.
     """
     pipeline = getattr(request.app.state, "pipeline", None) or _MODEL
@@ -195,7 +191,7 @@ def health(request: Request):
         version=settings.MODEL_VERSION,
         environment=settings.ENVIRONMENT,
         uptime_seconds=uptime,
-        total_predictions_served=PREDICTIONS_COUNTER
+        total_predictions_served=PREDICTIONS_COUNTER,
     )
 
 
@@ -208,7 +204,7 @@ def metrics():
 @app.post("/predict", response_model=PredictionResponse, tags=["Inference"])
 def predict(patient: PatientData, request: Request):
     """Predict heart disease presence/risk for an individual patient.
-    
+
     Accepts 13 clinical biomarkers, transforms them through the scikit-learn
     pipeline, and returns binary prediction with calibrated risk confidence.
     """
@@ -225,10 +221,7 @@ def predict(patient: PatientData, request: Request):
 
         # Prometheus metrics recording
         PREDICTIONS_COUNTER += 1
-        PREDICTIONS_TOTAL.labels(
-            prediction_class=str(result["prediction"]),
-            diagnosis_label=result["label"]
-        ).inc()
+        PREDICTIONS_TOTAL.labels(prediction_class=str(result["prediction"]), diagnosis_label=result["label"]).inc()
         INFERENCE_LATENCY_SECONDS.observe(latency_sec)
         DISEASE_PROBABILITY_SUMMARY.observe(result["probability_disease"])
         HTTP_REQUESTS_TOTAL.labels(method="POST", endpoint="/predict", status_code="200").inc()
@@ -240,7 +233,7 @@ def predict(patient: PatientData, request: Request):
             confidence=result["confidence"],
             probabilities=result["probabilities"],
             latency_ms=latency_ms,
-            model_version=settings.MODEL_VERSION
+            model_version=settings.MODEL_VERSION,
         )
     except Exception as e:
         HTTP_REQUESTS_TOTAL.labels(method="POST", endpoint="/predict", status_code="500").inc()
@@ -248,7 +241,7 @@ def predict(patient: PatientData, request: Request):
         logger.error(f"Inference error during /predict [req_id={req_id}]: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Inference execution failure. Verify inputs or check server logs."
+            detail="Inference execution failure. Verify inputs or check server logs.",
         )
 
 
@@ -269,10 +262,7 @@ def batch_predict(batch: BatchPatientData, request: Request):
         formatted_predictions = []
         for r in results:
             PREDICTIONS_COUNTER += 1
-            PREDICTIONS_TOTAL.labels(
-                prediction_class=str(r["prediction"]),
-                diagnosis_label=r["label"]
-            ).inc()
+            PREDICTIONS_TOTAL.labels(prediction_class=str(r["prediction"]), diagnosis_label=r["label"]).inc()
             DISEASE_PROBABILITY_SUMMARY.observe(r["probability_disease"])
 
             formatted_predictions.append(
@@ -283,7 +273,7 @@ def batch_predict(batch: BatchPatientData, request: Request):
                     confidence=r["confidence"],
                     probabilities=r["probabilities"],
                     latency_ms=avg_latency_ms,
-                    model_version=settings.MODEL_VERSION
+                    model_version=settings.MODEL_VERSION,
                 )
             )
 
@@ -291,9 +281,7 @@ def batch_predict(batch: BatchPatientData, request: Request):
         HTTP_REQUESTS_TOTAL.labels(method="POST", endpoint="/predict/batch", status_code="200").inc()
 
         return BatchPredictionResponse(
-            predictions=formatted_predictions,
-            total_records=len(records),
-            total_latency_ms=total_latency_ms
+            predictions=formatted_predictions, total_records=len(records), total_latency_ms=total_latency_ms
         )
     except Exception as e:
         HTTP_REQUESTS_TOTAL.labels(method="POST", endpoint="/predict/batch", status_code="500").inc()
@@ -301,7 +289,7 @@ def batch_predict(batch: BatchPatientData, request: Request):
         logger.error(f"Error during /predict/batch [req_id={req_id}]: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Batch inference execution failure. Verify inputs or check server logs."
+            detail="Batch inference execution failure. Verify inputs or check server logs.",
         )
 
 
@@ -320,8 +308,8 @@ def get_drift_status(request: Request):
         "monitored_features": list(baseline.get("features", {}).keys()),
         "thresholds": {
             "numerical_ks_pvalue": settings.DRIFT_PVALUE_THRESHOLD,
-            "categorical_psi": settings.DRIFT_PSI_THRESHOLD
-        }
+            "categorical_psi": settings.DRIFT_PSI_THRESHOLD,
+        },
     }
 
 
@@ -346,7 +334,7 @@ def evaluate_drift(payload: DriftEvaluationRequest, request: Request):
             drifted_features=report["drifted_features"],
             drift_ratio=report["drift_ratio"],
             baseline_reference=report["baseline_reference"],
-            feature_metrics=report["feature_metrics"]
+            feature_metrics=report["feature_metrics"],
         )
     except Exception as e:
         HTTP_REQUESTS_TOTAL.labels(method="POST", endpoint="/drift", status_code="500").inc()
@@ -354,10 +342,11 @@ def evaluate_drift(payload: DriftEvaluationRequest, request: Request):
         logger.error(f"Error during /drift evaluation [req_id={req_id}]: {e}", exc_info=True)
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail="Statistical drift evaluation failure. Verify payload or check server logs."
+            detail="Statistical drift evaluation failure. Verify payload or check server logs.",
         )
 
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run("src.api.app:app", host=settings.HOST, port=settings.PORT, reload=True)

@@ -11,16 +11,24 @@ from typing import Any
 
 import pandas as pd
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("clean_data")
 
 EXPECTED_COLUMNS = [
-    "age", "sex", "cp", "trestbps", "chol", "fbs",
-    "restecg", "thalach", "exang", "oldpeak", "slope",
-    "ca", "thal", "target"
+    "age",
+    "sex",
+    "cp",
+    "trestbps",
+    "chol",
+    "fbs",
+    "restecg",
+    "thalach",
+    "exang",
+    "oldpeak",
+    "slope",
+    "ca",
+    "thal",
+    "target",
 ]
 
 NUMERICAL_FEATURES = ["age", "trestbps", "chol", "thalach", "oldpeak"]
@@ -36,11 +44,10 @@ def validate_schema(df: pd.DataFrame) -> None:
 
 
 def clean_dataset(
-    input_path: str = "data/raw/heart.csv",
-    output_path: str = "data/processed/heart_cleaned.csv"
+    input_path: str = "data/raw/heart.csv", output_path: str = "data/processed/heart_cleaned.csv"
 ) -> tuple[pd.DataFrame, dict[str, Any]]:
     """Clean, validate, and standardize the raw heart disease dataset.
-    
+
     Cleaning Decisions:
     1. Replace '?' placeholders with NaN and coerce columns to numeric.
     2. Convert target: In the UCI Cleveland dataset, target values range from 0 to 4.
@@ -57,11 +64,11 @@ def clean_dataset(
     5. Missing values in 'ca' and 'thal' are preserved as NaN in processed data
        so that the scikit-learn Pipeline imputer can handle them during cross-validation
        without data leakage.
-       
+
     Args:
         input_path: Path to raw CSV.
         output_path: Path where cleaned CSV will be written.
-        
+
     Returns:
         Tuple of (cleaned DataFrame, quality report dictionary).
     """
@@ -95,7 +102,7 @@ def clean_dataset(
     # 4. Map target to binary (0 = Absence, 1 = Presence)
     raw_target_dist = df["target"].value_counts().to_dict()
     logger.info(f"Raw target distribution (0-4): {raw_target_dist}")
-    
+
     df["target_raw"] = df["target"]
     df["target"] = (df["target"] > 0).astype(int)
     binary_target_dist = df["target"].value_counts().to_dict()
@@ -131,7 +138,7 @@ def clean_dataset(
         "raw_target_distribution": raw_target_dist,
         "binary_target_distribution": binary_target_dist,
         "sanity_issues": sanity_issues,
-        "columns": list(df.columns)
+        "columns": list(df.columns),
     }
 
     return df, quality_report

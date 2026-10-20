@@ -33,7 +33,9 @@ class Settings:
         self.DATA_RAW_PATH: Path = PROJECT_ROOT / os.getenv("DATA_RAW_PATH", "data/raw/heart.csv")
         self.DATA_CLEAN_PATH: Path = PROJECT_ROOT / os.getenv("DATA_CLEAN_PATH", "data/processed/heart_cleaned.csv")
         self.MODEL_PATH: Path = PROJECT_ROOT / os.getenv("MODEL_PATH", "models/model_pipeline.joblib")
-        self.BASELINE_STATS_PATH: Path = PROJECT_ROOT / os.getenv("BASELINE_STATS_PATH", "models/baseline_distribution.json")
+        self.BASELINE_STATS_PATH: Path = PROJECT_ROOT / os.getenv(
+            "BASELINE_STATS_PATH", "models/baseline_distribution.json"
+        )
         self.REPORTS_DIR: Path = PROJECT_ROOT / os.getenv("REPORTS_DIR", "reports")
         self.FIGURES_DIR: Path = PROJECT_ROOT / os.getenv("FIGURES_DIR", "reports/figures")
 
@@ -42,7 +44,11 @@ class Settings:
         self.MLFLOW_EXPERIMENT_NAME: str = os.getenv("MLFLOW_EXPERIMENT_NAME", "heart-disease-classification")
 
         # Observability & Monitoring
-        self.PROMETHEUS_METRICS_ENABLED: bool = os.getenv("PROMETHEUS_METRICS_ENABLED", "true").lower() in ("true", "1", "yes")
+        self.PROMETHEUS_METRICS_ENABLED: bool = os.getenv("PROMETHEUS_METRICS_ENABLED", "true").lower() in (
+            "true",
+            "1",
+            "yes",
+        )
         self.DRIFT_PVALUE_THRESHOLD: float = float(os.getenv("DRIFT_PVALUE_THRESHOLD", "0.05"))
         self.DRIFT_PSI_THRESHOLD: float = float(os.getenv("DRIFT_PSI_THRESHOLD", "0.2"))
 

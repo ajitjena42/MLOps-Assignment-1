@@ -26,7 +26,7 @@ import joblib
 import matplotlib
 import pandas as pd
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import mlflow
 import mlflow.sklearn
 from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
@@ -47,10 +47,7 @@ from src.models.evaluate import (
     plot_roc_curves,
 )
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s [%(levelname)s] %(name)s: %(message)s"
-)
+logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(name)s: %(message)s")
 logger = logging.getLogger("train_model")
 
 RANDOM_STATE = 42
@@ -72,7 +69,7 @@ def get_candidate_models() -> dict[str, tuple[Any, dict[str, Any]]]:
                 "classifier__C": [0.01, 0.1, 1.0, 5.0, 10.0],
                 "classifier__penalty": ["l2"],
                 "classifier__solver": ["lbfgs", "liblinear"],
-            }
+            },
         ),
         "RandomForest": (
             RandomForestClassifier(random_state=RANDOM_STATE),
@@ -81,7 +78,7 @@ def get_candidate_models() -> dict[str, tuple[Any, dict[str, Any]]]:
                 "classifier__max_depth": [3, 5, 8, None],
                 "classifier__min_samples_split": [2, 5],
                 "classifier__min_samples_leaf": [1, 2, 4],
-            }
+            },
         ),
         "GradientBoosting": (
             GradientBoostingClassifier(random_state=RANDOM_STATE),
@@ -89,8 +86,8 @@ def get_candidate_models() -> dict[str, tuple[Any, dict[str, Any]]]:
                 "classifier__n_estimators": [50, 100],
                 "classifier__learning_rate": [0.01, 0.05, 0.1],
                 "classifier__max_depth": [2, 3, 4],
-            }
-        )
+            },
+        ),
     }
 
 
@@ -134,16 +131,11 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
         run_tags = {
             "mlflow.source.name": source_name,
             "mlflow.source.type": "NOTEBOOK" if source_name.endswith(".ipynb") else "LOCAL",
-            "notebook": "heart_disease_master.ipynb"
+            "notebook": "heart_disease_master.ipynb",
         }
         with mlflow.start_run(run_name=name, tags=run_tags) as run:
             # Construct unified pipeline
-            pipeline = Pipeline(
-                steps=[
-                    ("preprocessor", get_preprocessor()),
-                    ("classifier", estimator)
-                ]
-            )
+            pipeline = Pipeline(steps=[("preprocessor", get_preprocessor()), ("classifier", estimator)])
 
             # Hyperparameter Tuning using Stratified Cross-Validation
             # Scoring on 'roc_auc' balances sensitivity and specificity across thresholds
@@ -154,7 +146,7 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
                 scoring="roc_auc",
                 n_jobs=-1,
                 refit=True,
-                return_train_score=True
+                return_train_score=True,
             )
 
             grid_search.fit(X_train, y_train)
@@ -201,14 +193,16 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
             # MLflow Logging
             # 1. Parameters
             mlflow.log_params(best_params)
-            mlflow.log_params({
-                "model_type": name,
-                "cv_folds": CV_SPLITS,
-                "random_state": RANDOM_STATE,
-                "train_samples": len(X_train),
-                "test_samples": len(X_test),
-                "scoring_metric": "roc_auc"
-            })
+            mlflow.log_params(
+                {
+                    "model_type": name,
+                    "cv_folds": CV_SPLITS,
+                    "random_state": RANDOM_STATE,
+                    "train_samples": len(X_train),
+                    "test_samples": len(X_test),
+                    "scoring_metric": "roc_auc",
+                }
+            )
 
             # 2. Metrics
             mlflow.log_metric("cv_best_roc_auc", cv_roc_auc)
@@ -232,20 +226,20 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
                 sk_model=best_pipe,
                 artifact_path="pipeline",
                 input_example=input_example,
-                serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
+                serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
             )
 
             # Record model performance summary formatted for reporting
             models_comparison[name] = {
                 "5-Fold CV ROC-AUC": round(cv_roc_auc, 4),
-                "Test Accuracy": f"{test_metrics['accuracy']*100:.2f}%",
-                "Test Precision": f"{test_metrics['precision']*100:.2f}%",
-                "Test Recall (Sensitivity)": f"{test_metrics['recall']*100:.2f}%",
-                "Test F1-Score": round(test_metrics['f1'], 4),
-                "Test ROC-AUC": round(test_metrics['roc_auc'], 4),
+                "Test Accuracy": f"{test_metrics['accuracy'] * 100:.2f}%",
+                "Test Precision": f"{test_metrics['precision'] * 100:.2f}%",
+                "Test Recall (Sensitivity)": f"{test_metrics['recall'] * 100:.2f}%",
+                "Test F1-Score": round(test_metrics["f1"], 4),
+                "Test ROC-AUC": round(test_metrics["roc_auc"], 4),
                 "False Negatives": f"{test_metrics['false_negatives']} / 28",
                 "Best Parameters": str(best_params),
-                "mlflow_run_id": run.info.run_id
+                "mlflow_run_id": run.info.run_id,
             }
 
             # Decision criteria: Recall is weighted heavily in clinical diagnosis to minimize False Negatives
@@ -266,6 +260,7 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
     standard_cm_dest = FIGURES_DIR / "confusion_matrix.png"
     if best_cm_source.exists():
         import shutil
+
         shutil.copy(best_cm_source, standard_cm_dest)
 
     # Save final chosen model pipeline across reusable formats (Joblib, Pickle, MLflow Package)
@@ -276,6 +271,7 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
 
     # 2. Standard Pickle Format
     import pickle
+
     saved_pickle_path = MODELS_DIR / "model_pipeline.pkl"
     with open(saved_pickle_path, "wb") as f:
         pickle.dump(best_overall_pipeline, f)
@@ -284,9 +280,11 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
 
     # 3. Standalone MLflow Model Package (with schema signature & Conda/Pip requirements)
     from mlflow.models.signature import infer_signature
+
     mlflow_model_dir = MODELS_DIR / "mlflow_model"
     if mlflow_model_dir.exists():
         import shutil
+
         shutil.rmtree(mlflow_model_dir)
     input_sample = X_test.iloc[:2]
     signature = infer_signature(input_sample, best_overall_pipeline.predict(input_sample))
@@ -295,7 +293,7 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
         path=str(mlflow_model_dir),
         signature=signature,
         input_example=input_sample,
-        serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE
+        serialization_format=mlflow.sklearn.SERIALIZATION_FORMAT_CLOUDPICKLE,
     )
 
     # 4. Save Model Metrics for Automated CI/CD Quality Gates
@@ -303,16 +301,19 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
         "model_name": best_overall_name,
         "accuracy": round(float(models_comparison[best_overall_name]["Test Accuracy"].replace("%", "")) / 100.0, 4),
         "precision": round(float(models_comparison[best_overall_name]["Test Precision"].replace("%", "")) / 100.0, 4),
-        "recall": round(float(models_comparison[best_overall_name]["Test Recall (Sensitivity)"].replace("%", "")) / 100.0, 4),
+        "recall": round(
+            float(models_comparison[best_overall_name]["Test Recall (Sensitivity)"].replace("%", "")) / 100.0, 4
+        ),
         "f1": models_comparison[best_overall_name]["Test F1-Score"],
         "roc_auc": models_comparison[best_overall_name]["Test ROC-AUC"],
-        "cv_best_roc_auc": models_comparison[best_overall_name]["5-Fold CV ROC-AUC"]
+        "cv_best_roc_auc": models_comparison[best_overall_name]["5-Fold CV ROC-AUC"],
     }
     with open(MODELS_DIR / "model_metrics.json", "w") as f:
         json.dump(winning_metrics, f, indent=2)
 
     # 5. Generate and persist baseline distribution profile for drift detection
     from src.models.drift import generate_baseline_distribution
+
     generate_baseline_distribution(DATA_PATH, MODELS_DIR / "baseline_distribution.json")
 
     logger.info("\n=======================================================")
@@ -327,7 +328,7 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
     comparison_summary = {
         "selected_model": best_overall_name,
         "selection_criteria": "Clinical Recall priority (60%) + Discriminative ROC-AUC (40%)",
-        "models": models_comparison
+        "models": models_comparison,
     }
     summary_path = REPORTS_DIR / "model_comparison.json"
     with open(summary_path, "w") as f:

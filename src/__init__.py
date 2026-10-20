@@ -1,2 +1,3 @@
 """Root source package for Heart Disease MLOps project."""
+
 __version__ = "1.0.0"

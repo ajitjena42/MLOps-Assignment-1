@@ -37,7 +37,7 @@ class StructuredLoggingMiddleware(BaseHTTPMiddleware):
                 "method": request.method,
                 "path": request.url.path,
                 "status_code": response.status_code,
-                "latency_ms": process_time_ms
+                "latency_ms": process_time_ms,
             }
             logger.info(json.dumps(log_payload))
 

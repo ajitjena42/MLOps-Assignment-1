@@ -24,7 +24,7 @@ def sample_patient_json():
         "oldpeak": 2.0,
         "slope": 2.0,
         "ca": 2.0,
-        "thal": 7.0
+        "thal": 7.0,
     }
 
 
@@ -80,8 +80,8 @@ def test_predict_endpoint_validation_error():
     """Verify invalid physiological values return HTTP 422 with validation errors."""
     invalid_payload = {
         "age": -10.0,  # Invalid: negative age
-        "sex": 5.0,    # Invalid: not binary
-        "cp": 1.0
+        "sex": 5.0,  # Invalid: not binary
+        "cp": 1.0,
     }
     response = client.post("/predict", json=invalid_payload)
     assert response.status_code == 422
@@ -91,9 +91,7 @@ def test_predict_endpoint_validation_error():
 
 def test_batch_predict_endpoint(sample_patient_json):
     """Verify batch inference scores all records and aggregates latency."""
-    batch_payload = {
-        "patients": [sample_patient_json, sample_patient_json]
-    }
+    batch_payload = {"patients": [sample_patient_json, sample_patient_json]}
     response = client.post("/predict/batch", json=batch_payload)
     assert response.status_code == 200
     data = response.json()
@@ -117,9 +115,7 @@ def test_drift_get_status():
 
 def test_drift_post_evaluation(sample_patient_json):
     """Verify POST /drift evaluates batch patient records against training baseline."""
-    batch_payload = {
-        "records": [sample_patient_json] * 5
-    }
+    batch_payload = {"records": [sample_patient_json] * 5}
     response = client.post("/drift", json=batch_payload)
     assert response.status_code == 200
     data = response.json()
