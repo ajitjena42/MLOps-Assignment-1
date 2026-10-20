@@ -1,5 +1,4 @@
-artifact_uri: file:///Users/ajitjena/Desktop/Master Program/Semester 3/MLOps/Assignment/Assignment
-  1/mlruns/321489009407193096/9046bbe751744a4184db1bb34019f783/artifacts
+artifact_uri: mlruns/321489009407193096/9046bbe751744a4184db1bb34019f783/artifacts
 end_time: 1792498832484
 entry_point_name: ''
 experiment_id: '321489009407193096'

@@ -91,6 +91,46 @@ def get_candidate_models() -> dict[str, tuple[Any, dict[str, Any]]]:
     }
 
 
+def ensure_portable_mlruns(project_root: Path) -> None:
+    """Ensure all MLflow experiment metadata files use portable paths rather than hardcoded machine paths."""
+    mlruns_dir = project_root / "mlruns"
+    if not mlruns_dir.exists():
+        return
+    import yaml
+
+    for meta_path in mlruns_dir.rglob("meta.yaml"):
+        try:
+            content = meta_path.read_text(encoding="utf-8")
+            if "/Users/" in content or "file:///" in content:
+                data = yaml.safe_load(content)
+                changed = False
+                for key in ["artifact_location", "artifact_uri"]:
+                    if key in data and isinstance(data[key], str) and "mlruns" in data[key]:
+                        idx = data[key].find("mlruns")
+                        data[key] = data[key][idx:]
+                        changed = True
+                if changed:
+                    meta_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+        except Exception as e:
+            logger.warning(f"Could not sanitize {meta_path}: {e}")
+
+    for mlmodel_path in mlruns_dir.rglob("MLmodel"):
+        try:
+            content = mlmodel_path.read_text(encoding="utf-8")
+            if "/Users/" in content or "file:///" in content:
+                data = yaml.safe_load(content)
+                if (
+                    "artifact_path" in data
+                    and isinstance(data["artifact_path"], str)
+                    and "mlruns" in data["artifact_path"]
+                ):
+                    idx = data["artifact_path"].find("mlruns")
+                    data["artifact_path"] = data["artifact_path"][idx:]
+                    mlmodel_path.write_text(yaml.safe_dump(data, sort_keys=False), encoding="utf-8")
+        except Exception as e:
+            logger.warning(f"Could not sanitize {mlmodel_path}: {e}")
+
+
 def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
     """Execute complete training workflow with MLflow tracking and artifact generation."""
     MODELS_DIR.mkdir(parents=True, exist_ok=True)
@@ -112,6 +152,7 @@ def train_and_track(source_name: str = "notebooks/heart_disease_master.ipynb"):
     logger.info(f"Test label balance: {y_test.value_counts().to_dict()}")
 
     # Setup MLflow
+    ensure_portable_mlruns(PROJECT_ROOT)
     mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
     mlflow.set_experiment(EXPERIMENT_NAME)
     logger.info(f"MLflow tracking URI: {MLFLOW_TRACKING_URI}; Experiment: {EXPERIMENT_NAME}")

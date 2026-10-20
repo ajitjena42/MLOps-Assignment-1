@@ -1,5 +1,4 @@
-artifact_location: file:///Users/ajitjena/Desktop/Master Program/Semester 3/MLOps/Assignment/Assignment
-  1/mlruns/321489009407193096/models/m-97b5dafe17a3435ea900036d82f5a6d1/artifacts
+artifact_location: mlruns/321489009407193096/models/m-97b5dafe17a3435ea900036d82f5a6d1/artifacts
 creation_timestamp: 1792498837763
 experiment_id: '321489009407193096'
 last_updated_timestamp: 1792498840669

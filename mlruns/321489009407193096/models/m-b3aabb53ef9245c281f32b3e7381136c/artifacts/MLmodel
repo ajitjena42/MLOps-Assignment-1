@@ -1,5 +1,4 @@
-artifact_path: file:///Users/ajitjena/Desktop/Master Program/Semester 3/MLOps/Assignment/Assignment
-  1/mlruns/321489009407193096/models/m-b3aabb53ef9245c281f32b3e7381136c/artifacts
+artifact_path: mlruns/321489009407193096/models/m-b3aabb53ef9245c281f32b3e7381136c/artifacts
 flavors:
   python_function:
     env:
