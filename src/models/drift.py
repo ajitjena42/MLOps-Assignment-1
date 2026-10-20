@@ -9,11 +9,13 @@ Statistical Methods:
 - Target / Prediction: Class balance drift against historical prevalence baseline.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 import math
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -30,7 +32,8 @@ logger = logging.getLogger("drift")
 
 
 def generate_baseline_distribution(
-    data_path: str | Path | None = None, output_path: str | Path | None = None
+    data_path: Optional[Union[str, Path]] = None,
+    output_path: Optional[Union[str, Path]] = None,
 ) -> dict[str, Any]:
     """Compute and persist summary baseline statistics from cleaned training data.
 
@@ -98,7 +101,7 @@ def generate_baseline_distribution(
     return baseline
 
 
-def load_baseline_distribution(stats_path: str | Path | None = None) -> dict[str, Any]:
+def load_baseline_distribution(stats_path: Optional[Union[str, Path]] = None) -> dict[str, Any]:
     """Load baseline distribution profile from disk or regenerate if missing."""
     file_path = Path(stats_path) if stats_path else settings.BASELINE_STATS_PATH
     if not file_path.exists():
@@ -132,9 +135,9 @@ def calculate_psi(expected_probs: dict[str, float], actual_probs: dict[str, floa
 
 def compute_drift(
     batch_records: list[dict[str, Any]],
-    baseline_stats: dict[str, Any] | None = None,
-    p_value_threshold: float | None = None,
-    psi_threshold: float | None = None,
+    baseline_stats: Optional[dict[str, Any]] = None,
+    p_value_threshold: Optional[float] = None,
+    psi_threshold: Optional[float] = None,
 ) -> dict[str, Any]:
     """Evaluate statistical feature drift between incoming batch and baseline profile.
 

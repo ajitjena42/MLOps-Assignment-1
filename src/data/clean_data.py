@@ -4,6 +4,8 @@ Validates column schemas, data types, value boundaries, handles missing values,
 and maps angiographic heart disease presence (0 vs 1..4) into binary target classes.
 """
 
+from __future__ import annotations
+
 import logging
 import sys
 from pathlib import Path

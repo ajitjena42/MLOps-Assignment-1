@@ -4,6 +4,8 @@ Constructs scikit-learn ColumnTransformer pipelines combining imputation,
 standardization, and one-hot encoding without data leakage.
 """
 
+from __future__ import annotations
+
 import pandas as pd
 from sklearn.compose import ColumnTransformer
 from sklearn.impute import SimpleImputer

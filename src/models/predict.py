@@ -4,10 +4,12 @@ Loads the fitted pipeline (preprocessing + estimator) and serves predictions
 for individual dictionaries, batch records, or pandas DataFrames with sub-millisecond execution.
 """
 
+from __future__ import annotations
+
 import json
 import logging
 from pathlib import Path
-from typing import Any
+from typing import Any, Optional, Union
 
 import joblib
 import numpy as np
@@ -22,7 +24,7 @@ MODEL_PATH = settings.get_model_path()
 _MODEL = None
 
 
-def load_model(model_path: str | Path | None = None, reload: bool = False):
+def load_model(model_path: Optional[Union[str, Path]] = None, reload: bool = False):
     """Load and cache the trained pipeline across joblib, pickle, or MLflow formats.
 
     Args:
@@ -54,7 +56,9 @@ def load_model(model_path: str | Path | None = None, reload: bool = False):
 
 
 def predict_single(
-    data: dict[str, Any], model_path: str | Path | None = None, pipeline: Any | None = None
+    data: dict[str, Any],
+    model_path: Optional[Union[str, Path]] = None,
+    pipeline: Optional[Any] = None,
 ) -> dict[str, Any]:
     """Execute prediction on a single patient record.
 
@@ -94,7 +98,9 @@ def predict_single(
 
 
 def predict_batch(
-    records: list[dict[str, Any]], model_path: str | Path | None = None, pipeline: Any | None = None
+    records: list[dict[str, Any]],
+    model_path: Optional[Union[str, Path]] = None,
+    pipeline: Optional[Any] = None,
 ) -> list[dict[str, Any]]:
     """Execute high-throughput batch predictions on a list of patient records.
 

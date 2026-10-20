@@ -10,6 +10,8 @@ Features:
 - Production health and readiness probes (/health)
 """
 
+from __future__ import annotations
+
 import logging
 import time
 from contextlib import asynccontextmanager
