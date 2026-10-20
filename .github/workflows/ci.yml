@@ -26,10 +26,22 @@ jobs:
           pip install ruff
 
       - name: Run Ruff Lint Checks
-        run: ruff check .
+        run: |
+          mkdir -p reports/lint
+          ruff check . | tee reports/lint/ruff-lint.txt
 
       - name: Run Ruff Formatting Check
-        run: ruff format --check .
+        run: |
+          ruff format --check . | tee reports/lint/ruff-format.txt
+
+      - name: Upload Linting & Formatting Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: lint-and-style-artifacts
+          path: reports/lint/
+          if-no-files-found: warn
+          retention-days: 7
 
   test-suite:
     name: Automated Unit & Integration Tests (pytest)
@@ -52,22 +64,68 @@ jobs:
           pip install -e .
 
       - name: Download & Prepare UCI Cleveland Dataset
-        run: python src/data/download_data.py
+        run: |
+          python src/data/download_data.py
+          echo "=== Downloaded Dataset Artifact ==="
+          ls -lh data/raw/heart.csv
 
-      - name: Validate Dataset Schema & Clean Data
-        run: python src/data/clean_data.py
-
-      - name: Train Baseline Model Artifact for Testing
-        run: python src/models/train.py
-
-      - name: Run Pytest Suite
-        run: pytest -v tests/
-
-      - name: Upload Test Coverage Artifact
+      - name: Upload Raw Dataset Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
-          path: coverage.xml
+          name: raw-dataset-artifact
+          path: data/raw/heart.csv
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Validate Dataset Schema & Clean Data
+        run: |
+          python src/data/clean_data.py
+          echo "=== Cleaned Dataset Artifact ==="
+          ls -lh data/processed/heart_cleaned.csv
+
+      - name: Upload Cleaned Dataset Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cleaned-dataset-artifact
+          path: data/processed/heart_cleaned.csv
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Train Baseline Model Artifact for Testing
+        run: |
+          python src/models/train.py
+          echo "=== Generated Model Artifacts ==="
+          ls -lh models/
+          echo "=== Generated Diagnostic Figures ==="
+          ls -lh reports/figures/
+
+      - name: Upload Trained Model Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trained-model-artifacts
+          path: |
+            models/
+            reports/model_comparison.json
+            reports/figures/
+          if-no-files-found: warn
+          retention-days: 7
+
+      - name: Run Pytest Suite
+        run: |
+          mkdir -p reports/tests
+          pytest -v --junitxml=reports/tests/junit-report.xml tests/
+          echo "=== Test Results Artifact ==="
+          ls -lh reports/tests/
+
+      - name: Upload Test Results Artifact
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: pytest-results-artifact
+          path: |
+            reports/tests/
+            coverage.xml
+          if-no-files-found: warn
           retention-days: 7
 
   docker-build-verification:
@@ -87,10 +145,23 @@ jobs:
 
       - name: Smoke Test Running Container
         run: |
+          mkdir -p reports/docker
           docker run -d --name heartguard-ci -p 8000:8000 heartguard-api:ci-test
           sleep 5
-          docker ps
-          curl -f http://localhost:8000/health || (docker logs heartguard-ci && exit 1)
-          curl -f http://localhost:8000/metrics || exit 1
+          docker ps | tee reports/docker/docker-ps.txt
+          curl -f http://localhost:8000/health | tee reports/docker/health-check.json || (docker logs heartguard-ci && exit 1)
+          curl -f http://localhost:8000/metrics | tee reports/docker/metrics-sample.txt || exit 1
+          docker logs heartguard-ci > reports/docker/container.log 2>&1
           docker stop heartguard-ci
           docker rm heartguard-ci
+          echo "=== Docker Smoke Test Artifacts ==="
+          ls -lh reports/docker/
+
+      - name: Upload Docker Smoke Test Artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: docker-verification-artifacts
+          path: reports/docker/
+          if-no-files-found: warn
+          retention-days: 7
