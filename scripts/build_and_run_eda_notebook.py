@@ -25,7 +25,7 @@ import nbformat as nbf
 import numpy as np
 import pandas as pd
 
-matplotlib.use('Agg')
+matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.metrics import confusion_matrix
@@ -52,36 +52,31 @@ RAW_DATA_PATH = WORKSPACE_ROOT / "data" / "raw" / "heart.csv"
 PROCESSED_DATA_PATH = WORKSPACE_ROOT / "data" / "processed" / "heart_cleaned.csv"
 
 # Professional publication styling
-plt.style.use('seaborn-v0_8-whitegrid' if 'seaborn-v0_8-whitegrid' in plt.style.available else 'default')
-plt.rcParams['font.sans-serif'] = 'Helvetica', 'Arial', 'DejaVu Sans'
-plt.rcParams['font.size'] = 11
-plt.rcParams['axes.titlesize'] = 13
-plt.rcParams['axes.titleweight'] = 'bold'
-plt.rcParams['figure.titlesize'] = 15
-plt.rcParams['figure.titleweight'] = 'bold'
-plt.rcParams['axes.edgecolor'] = '#333333'
-plt.rcParams['axes.linewidth'] = 0.8
+plt.style.use("seaborn-v0_8-whitegrid" if "seaborn-v0_8-whitegrid" in plt.style.available else "default")
+plt.rcParams["font.sans-serif"] = "Helvetica", "Arial", "DejaVu Sans"
+plt.rcParams["font.size"] = 11
+plt.rcParams["axes.titlesize"] = 13
+plt.rcParams["axes.titleweight"] = "bold"
+plt.rcParams["figure.titlesize"] = 15
+plt.rcParams["figure.titleweight"] = "bold"
+plt.rcParams["axes.edgecolor"] = "#333333"
+plt.rcParams["axes.linewidth"] = 0.8
+
 
 def fig_to_base64(fig) -> str:
     buf = io.BytesIO()
-    fig.savefig(buf, format='png', dpi=300, bbox_inches='tight')
+    fig.savefig(buf, format="png", dpi=300, bbox_inches="tight")
     buf.seek(0)
-    data = base64.b64encode(buf.read()).decode('utf-8')
+    data = base64.b64encode(buf.read()).decode("utf-8")
     plt.close(fig)
     return data
+
 
 def build_notebook():
     nb = nbf.v4.new_notebook()
     nb["metadata"] = {
-        "kernelspec": {
-            "display_name": "Python 3.11 (venv)",
-            "language": "python",
-            "name": "python3"
-        },
-        "language_info": {
-            "name": "python",
-            "version": "3.11.13"
-        }
+        "kernelspec": {"display_name": "Python 3.11 (venv)", "language": "python", "name": "python3"},
+        "language_info": {"name": "python", "version": "3.11.13"},
     }
 
     cells = []
@@ -90,7 +85,8 @@ def build_notebook():
     # ==========================================
     # TITLE & OVERVIEW
     # ==========================================
-    cells.append(nbf.v4.new_markdown_cell("""# Heart Disease UCI: End-to-End Diagnostic Pipeline & Modeling System
+    cells.append(
+        nbf.v4.new_markdown_cell("""# Heart Disease UCI: End-to-End Diagnostic Pipeline & Modeling System
 
 **Course:** AIMLCZG523 - Machine Learning Operations (MLOps)
 **Institution:** Birla Institute of Technology & Science (BITS), Pilani
@@ -118,7 +114,8 @@ def build_notebook():
    - Bitwise cross-format verification and multi-format inference.
 6. **Part 6: Automated Unit Testing & Pipeline Verification**
    - In-notebook unit assertions and programmatic `pytest` execution verifying schema contracts, binary transformations, deduplication, and transformation dimensions.
-"""))
+""")
+    )
 
     # ==========================================
     # CELL 2: IMPORTS & PATH SETUP
@@ -172,24 +169,27 @@ print(f"Models Path:      {MODELS_DIR.resolve()}")"""
 
     c2 = nbf.v4.new_code_cell(c2_code)
     c2.execution_count = exec_cnt
-    c2.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            f"Project Root:     {WORKSPACE_ROOT.resolve()}\n"
-            f"Raw Data Path:    {RAW_DATA_PATH.resolve()}\n"
-            f"Clean Data Path:  {PROCESSED_DATA_PATH.resolve()}\n"
-            f"Figures Path:     {FIGURES_DIR.resolve()}\n"
-            f"Models Path:      {MODELS_DIR.resolve()}\n"
+    c2.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                f"Project Root:     {WORKSPACE_ROOT.resolve()}\n"
+                f"Raw Data Path:    {RAW_DATA_PATH.resolve()}\n"
+                f"Clean Data Path:  {PROCESSED_DATA_PATH.resolve()}\n"
+                f"Figures Path:     {FIGURES_DIR.resolve()}\n"
+                f"Models Path:      {MODELS_DIR.resolve()}\n"
+            ),
         )
-    )]
+    ]
     cells.append(c2)
     exec_cnt += 1
 
     # =========================================================================
     # PART 1: DATASET ACQUISITION & DOWNLOAD INSTRUCTIONS
     # =========================================================================
-    cells.append(nbf.v4.new_markdown_cell(r"""---
+    cells.append(
+        nbf.v4.new_markdown_cell(r"""---
 # Part 1: Dataset Acquisition & Download Instructions
 
 ### 1.1 Dataset Provenance & Attribution
@@ -212,7 +212,8 @@ The ingestion pipeline is implemented in `src/data/download_data.py`. It downloa
 ```bash
 python src/data/download_data.py data/raw/heart.csv
 ```
-"""))
+""")
+    )
 
     raw_dest = download_dataset(output_path=str(RAW_DATA_PATH), force=False)
     raw_df = pd.read_csv(raw_dest, na_values="?")
@@ -236,26 +237,29 @@ display(raw_df.head(5))"""
 
     c3 = nbf.v4.new_code_cell(c3_code)
     c3.execution_count = exec_cnt
-    c3.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "=== RAW DATASET INGESTION SUMMARY ===\n"
-            f"Source Destination: {raw_dest}\n"
-            f"Total Patient Records: {len(raw_df)}\n"
-            f"Total Columns: {len(raw_df.columns)}\n"
-            f"Columns: {list(raw_df.columns)}\n"
-            f"Missing Value Placeholders ('?') Detected: {raw_df.isna().sum().sum()} total cells\n\n"
-            f"First 5 Records (Raw Ingestion - All 14 Attributes):\n{raw_df.head(5).to_string()}\n"
+    c3.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "=== RAW DATASET INGESTION SUMMARY ===\n"
+                f"Source Destination: {raw_dest}\n"
+                f"Total Patient Records: {len(raw_df)}\n"
+                f"Total Columns: {len(raw_df.columns)}\n"
+                f"Columns: {list(raw_df.columns)}\n"
+                f"Missing Value Placeholders ('?') Detected: {raw_df.isna().sum().sum()} total cells\n\n"
+                f"First 5 Records (Raw Ingestion - All 14 Attributes):\n{raw_df.head(5).to_string()}\n"
+            ),
         )
-    )]
+    ]
     cells.append(c3)
     exec_cnt += 1
 
     # =========================================================================
     # PART 2: DATA CLEANING & PREPROCESSING
     # =========================================================================
-    cells.append(nbf.v4.new_markdown_cell("""---
+    cells.append(
+        nbf.v4.new_markdown_cell("""---
 # Part 2: Data Cleaning & Preprocessing
 
 ### 2.1 Cleaning Decisions & Leak-Free Strategy
@@ -268,12 +272,10 @@ display(raw_df.head(5))"""
    - Per assignment specifications and clinical guidelines, $\\{1, 2, 3, 4\\} \to 1$ (Heart Disease Present / Elevated Risk) and $\\{0\\} \to 0$ (Absence).
 4. **Physiological Sanity Enforcement:** Asserts physiological limits on `age` (18-120), `trestbps` (70-260 mm Hg), `chol` (80-650 mg/dl), `thalach` (50-250 bpm), and `oldpeak` (0-10 mm).
 5. **Data Leakage Prevention:** Missing values are confined to `ca` (4 cells) and `thal` (2 cells). Rather than applying global dataset imputation, these are preserved as `NaN` in `data/processed/heart_cleaned.csv` and imputed strictly within training folds during cross-validation.
-"""))
-
-    cleaned_df, quality_report = clean_dataset(
-        input_path=str(RAW_DATA_PATH),
-        output_path=str(PROCESSED_DATA_PATH)
+""")
     )
+
+    cleaned_df, quality_report = clean_dataset(input_path=str(RAW_DATA_PATH), output_path=str(PROCESSED_DATA_PATH))
 
     c4_code = """from src.data.clean_data import clean_dataset, validate_schema, EXPECTED_COLUMNS
 
@@ -300,27 +302,30 @@ display(cleaned_df[EXPECTED_COLUMNS].head(5))"""
 
     c4 = nbf.v4.new_code_cell(c4_code)
     c4.execution_count = exec_cnt
-    c4.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "=== DATA CLEANING QUALITY REPORT ===\n"
-            f"Initial Records:         {quality_report['initial_rows']}\n"
-            f"Final Retained Records:  {quality_report['final_rows']}\n"
-            f"Duplicate Rows Dropped:  {quality_report['duplicates_removed']}\n"
-            f"Raw Target Classes:      {quality_report['raw_target_distribution']}\n"
-            f"Standardized Target:     {quality_report['binary_target_distribution']}\n"
-            f"Missing Values:          {quality_report['missing_values']}\n"
-            f"Sanity Check Warnings:   All checks PASSED\n\n"
-            "=== SAMPLE CLEANED DATASET (FIRST 5 ROWS - ALL 14 CLINICAL FEATURES) ===\n"
-            f"{cleaned_df[EXPECTED_COLUMNS].head(5).to_string()}\n"
+    c4.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "=== DATA CLEANING QUALITY REPORT ===\n"
+                f"Initial Records:         {quality_report['initial_rows']}\n"
+                f"Final Retained Records:  {quality_report['final_rows']}\n"
+                f"Duplicate Rows Dropped:  {quality_report['duplicates_removed']}\n"
+                f"Raw Target Classes:      {quality_report['raw_target_distribution']}\n"
+                f"Standardized Target:     {quality_report['binary_target_distribution']}\n"
+                f"Missing Values:          {quality_report['missing_values']}\n"
+                f"Sanity Check Warnings:   All checks PASSED\n\n"
+                "=== SAMPLE CLEANED DATASET (FIRST 5 ROWS - ALL 14 CLINICAL FEATURES) ===\n"
+                f"{cleaned_df[EXPECTED_COLUMNS].head(5).to_string()}\n"
+            ),
         )
-    )]
+    ]
     cells.append(c4)
     exec_cnt += 1
 
     # Markdown Table displaying all 14 features
-    cells.append(nbf.v4.new_markdown_cell("""### 2.2 Sample Cleaned Patient Records & Feature Semantics
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 2.2 Sample Cleaned Patient Records & Feature Semantics
 
 | Patient Record | `age` | `sex` | `cp` | `trestbps` | `chol` | `fbs` | `restecg` | `thalach` | `exang` | `oldpeak` | `slope` | `ca` | `thal` | `target` |
 | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
@@ -345,10 +350,12 @@ display(cleaned_df[EXPECTED_COLUMNS].head(5))"""
 - **`ca`**: Major coronary vessels colored by fluoroscopy ($0\text{--}3$).
 - **`thal`**: Thalassemia scintigraphy defect status ($3$: Normal, $6$: Fixed defect, $7$: Reversible defect).
 - **`target`**: Standardized diagnosis ($0 = \text{Absence}, 1 = \text{Presence / Elevated Risk}$).
-"""))
+""")
+    )
 
     # Feature Engineering Section
-    cells.append(nbf.v4.new_markdown_cell("""### 2.3 Feature Engineering & Leak-Free ColumnTransformer Pipeline
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 2.3 Feature Engineering & Leak-Free ColumnTransformer Pipeline
 
 To guarantee **zero data leakage**, feature transformations are encapsulated inside a scikit-learn `ColumnTransformer`:
 
@@ -366,7 +373,8 @@ Patient Clinical Vector (13 Input Features)
 
 - **Dimension Expansion:** Converts 13 raw clinical attributes into **28 leak-free numerical features**.
 - **Categorical Generalization:** `handle_unknown='ignore'` prevents runtime crashes on unobserved levels during production inference.
-"""))
+""")
+    )
 
     preprocessor = get_preprocessor()
     X_train, X_test, y_train, y_test = prepare_train_test_data(cleaned_df, test_size=0.2, random_state=42)
@@ -414,7 +422,7 @@ display(encoded_df.head(5).round(3))"""
     encoded_df_preview = pd.DataFrame(X_train_trans, columns=feature_names).head(5).round(3)
     c5 = nbf.v4.new_code_cell(c5_code)
     c5.execution_count = exec_cnt
-    names_str = "\n".join([f"  {idx+1:02d}. {name}" for idx, name in enumerate(feature_names)])
+    names_str = "\n".join([f"  {idx + 1:02d}. {name}" for idx, name in enumerate(feature_names)])
     c5.outputs = [
         nbf.v4.new_output(
             output_type="stream",
@@ -429,21 +437,22 @@ display(encoded_df.head(5).round(3))"""
                 f"Transformed X_test:     {X_test_trans.shape} (NaN count: 0)\n\n"
                 f"Generated Encoded Features:\n{names_str}\n\n"
                 "First 5 Rows of Encoded Features (Transformed X_train):\n"
-            )
+            ),
         ),
         nbf.v4.new_output(
             output_type="display_data",
             data={
                 "text/html": encoded_df_preview.to_html(classes="dataframe", border=1),
-                "text/plain": encoded_df_preview.to_string()
-            }
-        )
+                "text/plain": encoded_df_preview.to_string(),
+            },
+        ),
     ]
     cells.append(c5)
     exec_cnt += 1
 
     # Domain Breakdown Markdown Table
-    cells.append(nbf.v4.new_markdown_cell("""### 2.4 Encoded Feature Breakdown (Transformed $X_{train}$ by Clinical Domain)
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 2.4 Encoded Feature Breakdown (Transformed $X_{train}$ by Clinical Domain)
 
 The 28 transformed features are partitioned into continuous standardized biomarkers and one-hot categorical indicator vectors:
 
@@ -482,38 +491,48 @@ The 28 transformed features are partitioned into continuous standardized biomark
 | **Sample 3** | 0 | 1 | 0 | 0 | 1 | 0 | 0 |
 | **Sample 4** | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
 | **Sample 5** | 1 | 0 | 0 | 0 | 0 | 0 | 1 |
-"""))
+""")
+    )
 
     # =========================================================================
     # PART 3: EXPLORATORY DATA ANALYSIS (EDA) & DIAGNOSTIC VISUALIZATIONS
     # =========================================================================
-    cells.append(nbf.v4.new_markdown_cell("""---
+    cells.append(
+        nbf.v4.new_markdown_cell("""---
 # Part 3: Exploratory Data Analysis (EDA) & Diagnostic Visualizations
 
 ### 3.1 Target Class Distribution: Multi-Category to Binary Formulation
 We visualize the transition from the raw angiographic 0–4 scale to the standardized binary screening target.
-"""))
+""")
+    )
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    raw_counts = cleaned_df['target_raw'].value_counts().sort_index()
+    raw_counts = cleaned_df["target_raw"].value_counts().sort_index()
     palette_raw = sns.color_palette("mako", len(raw_counts))
-    axes[0].bar(raw_counts.index.astype(str), raw_counts.values, color=palette_raw, edgecolor='black', linewidth=0.8)
+    axes[0].bar(raw_counts.index.astype(str), raw_counts.values, color=palette_raw, edgecolor="black", linewidth=0.8)
     axes[0].set_title("Original Multi-Category Angiographic Status (0-4)")
     axes[0].set_xlabel("Vessel Narrowing Stage (0 = <50%, 1-4 = >50%)")
     axes[0].set_ylabel("Patient Count")
     for idx, val in enumerate(raw_counts.values):
-        axes[0].text(idx, val + 2, f"{val} ({val/len(cleaned_df)*100:.1f}%)", ha='center', fontweight='bold')
+        axes[0].text(idx, val + 2, f"{val} ({val / len(cleaned_df) * 100:.1f}%)", ha="center", fontweight="bold")
 
-    binary_counts = cleaned_df['target'].value_counts().sort_index()
-    labels = ['Absence (0)', 'Presence (1)']
-    colors = ['#2b5c8f', '#d95f02']
-    axes[1].pie(binary_counts.values, labels=labels, autopct='%1.1f%%', startangle=140,
-                colors=colors, explode=(0.04, 0.04), textprops={'fontsize': 12, 'weight': 'bold'},
-                wedgeprops={'edgecolor': 'black', 'linewidth': 1})
+    binary_counts = cleaned_df["target"].value_counts().sort_index()
+    labels = ["Absence (0)", "Presence (1)"]
+    colors = ["#2b5c8f", "#d95f02"]
+    axes[1].pie(
+        binary_counts.values,
+        labels=labels,
+        autopct="%1.1f%%",
+        startangle=140,
+        colors=colors,
+        explode=(0.04, 0.04),
+        textprops={"fontsize": 12, "weight": "bold"},
+        wedgeprops={"edgecolor": "black", "linewidth": 1},
+    )
     axes[1].set_title(f"Standardized Binary Target Distribution (N = {len(cleaned_df)})")
     plt.tight_layout()
     f1_path = FIGURES_DIR / "01_target_distribution.png"
-    plt.savefig(f1_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f1_path, dpi=300, bbox_inches="tight")
     b64_f1 = fig_to_base64(fig)
 
     c6_code = """fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -540,44 +559,47 @@ plt.show()"""
 
     c6 = nbf.v4.new_code_cell(c6_code)
     c6.execution_count = exec_cnt
-    c6.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f1, "text/plain": "<Figure size 1400x500 with 2 Axes>"}
-    )]
+    c6.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f1, "text/plain": "<Figure size 1400x500 with 2 Axes>"}
+        )
+    ]
     cells.append(c6)
     exec_cnt += 1
 
     # Fig 2: Numerical Histograms
-    cells.append(nbf.v4.new_markdown_cell("""### 3.2 Continuous Physiological Feature Distributions with KDE & Outlier Assessment
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.2 Continuous Physiological Feature Distributions with KDE & Outlier Assessment
 Evaluating central tendencies, skewness, and physiological spread across the 5 continuous variables.
-"""))
+""")
+    )
 
     fig, axes = plt.subplots(2, 3, figsize=(16, 10))
     axes_flat = axes.flatten()
-    num_cols = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
+    num_cols = ["age", "trestbps", "chol", "thalach", "oldpeak"]
     titles = [
-        'Age (Years)',
-        'Resting Blood Pressure (mm Hg)',
-        'Serum Cholesterol (mg/dl)',
-        'Max Heart Rate Achieved (bpm)',
-        'ST Depression Induced by Exercise (oldpeak)'
+        "Age (Years)",
+        "Resting Blood Pressure (mm Hg)",
+        "Serum Cholesterol (mg/dl)",
+        "Max Heart Rate Achieved (bpm)",
+        "ST Depression Induced by Exercise (oldpeak)",
     ]
     for i, col in enumerate(num_cols):
         ax = axes_flat[i]
-        sns.histplot(cleaned_df[col], kde=True, ax=ax, color='#1f77b4', edgecolor='black', alpha=0.6, bins=20)
+        sns.histplot(cleaned_df[col], kde=True, ax=ax, color="#1f77b4", edgecolor="black", alpha=0.6, bins=20)
         mean_val = cleaned_df[col].mean()
         median_val = cleaned_df[col].median()
-        ax.axvline(mean_val, color='#d62728', linestyle='--', linewidth=1.5, label=f"Mean: {mean_val:.1f}")
-        ax.axvline(median_val, color='#2ca02c', linestyle='-', linewidth=1.5, label=f"Median: {median_val:.1f}")
+        ax.axvline(mean_val, color="#d62728", linestyle="--", linewidth=1.5, label=f"Mean: {mean_val:.1f}")
+        ax.axvline(median_val, color="#2ca02c", linestyle="-", linewidth=1.5, label=f"Median: {median_val:.1f}")
         ax.set_title(titles[i])
         ax.set_xlabel(col)
         ax.set_ylabel("Count")
-        ax.legend(frameon=True, facecolor='white', framealpha=0.9)
+        ax.legend(frameon=True, facecolor="white", framealpha=0.9)
     fig.delaxes(axes_flat[5])
     plt.suptitle("Distribution of Numerical Physiological Features with Central Tendencies", y=1.02)
     plt.tight_layout()
     f2_path = FIGURES_DIR / "02_numerical_histograms.png"
-    plt.savefig(f2_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f2_path, dpi=300, bbox_inches="tight")
     b64_f2 = fig_to_base64(fig)
 
     c7_code = """num_cols = ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']
@@ -601,57 +623,64 @@ plt.show()"""
 
     c7 = nbf.v4.new_code_cell(c7_code)
     c7.execution_count = exec_cnt
-    num_desc_str = cleaned_df[num_cols].describe().T[['count', 'mean', 'std', 'min', '25%', '50%', '75%', 'max']].to_string()
+    num_desc_str = (
+        cleaned_df[num_cols].describe().T[["count", "mean", "std", "min", "25%", "50%", "75%", "max"]].to_string()
+    )
     c7.outputs = [
         nbf.v4.new_output(
-            output_type="stream",
-            name="stdout",
-            text=f"=== NUMERICAL DESCRIPTIVE STATISTICS ===\n{num_desc_str}\n"
+            output_type="stream", name="stdout", text=f"=== NUMERICAL DESCRIPTIVE STATISTICS ===\n{num_desc_str}\n"
         ),
         nbf.v4.new_output(
-            output_type="display_data",
-            data={"image/png": b64_f2, "text/plain": "<Figure size 1600x1000 with 5 Axes>"}
-        )
+            output_type="display_data", data={"image/png": b64_f2, "text/plain": "<Figure size 1600x1000 with 5 Axes>"}
+        ),
     ]
     cells.append(c7)
     exec_cnt += 1
 
     # Fig 3: Categorical distributions
-    cells.append(nbf.v4.new_markdown_cell("""### 3.3 Categorical & Ordinal Diagnostic Feature Profiles
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.3 Categorical & Ordinal Diagnostic Feature Profiles
 Frequency breakdown of the 8 categorical attributes with clinical terminology labels.
-"""))
+""")
+    )
 
     fig, axes = plt.subplots(2, 4, figsize=(18, 9))
     axes_flat = axes.flatten()
-    cat_features = ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal']
+    cat_features = ["sex", "cp", "fbs", "restecg", "exang", "slope", "ca", "thal"]
     cat_labels = {
-        'sex': {0: 'Female', 1: 'Male'},
-        'cp': {1: 'Typ Angina', 2: 'Atyp Angina', 3: 'Non-Anginal', 4: 'Asymptomatic'},
-        'fbs': {0: '<= 120', 1: '> 120'},
-        'restecg': {0: 'Normal', 1: 'ST-T Abn', 2: 'LVH'},
-        'exang': {0: 'No', 1: 'Yes'},
-        'slope': {1: 'Upsloping', 2: 'Flat', 3: 'Downsloping'},
-        'ca': {0: '0 Vessels', 1: '1 Vessel', 2: '2 Vessels', 3: '3 Vessels'},
-        'thal': {3: 'Normal', 6: 'Fixed Defect', 7: 'Reversible Def'}
+        "sex": {0: "Female", 1: "Male"},
+        "cp": {1: "Typ Angina", 2: "Atyp Angina", 3: "Non-Anginal", 4: "Asymptomatic"},
+        "fbs": {0: "<= 120", 1: "> 120"},
+        "restecg": {0: "Normal", 1: "ST-T Abn", 2: "LVH"},
+        "exang": {0: "No", 1: "Yes"},
+        "slope": {1: "Upsloping", 2: "Flat", 3: "Downsloping"},
+        "ca": {0: "0 Vessels", 1: "1 Vessel", 2: "2 Vessels", 3: "3 Vessels"},
+        "thal": {3: "Normal", 6: "Fixed Defect", 7: "Reversible Def"},
     }
     for i, col in enumerate(cat_features):
         ax = axes_flat[i]
         val_counts = cleaned_df[col].value_counts().sort_index()
         x_ticks = [cat_labels[col].get(val, str(val)) for val in val_counts.index]
-        bars = ax.bar(x_ticks, val_counts.values, color='#4575b4', edgecolor='black', linewidth=0.8)
+        bars = ax.bar(x_ticks, val_counts.values, color="#4575b4", edgecolor="black", linewidth=0.8)
         ax.set_title(f"{col.upper()}: Frequency Distribution")
         ax.set_ylabel("Patient Count")
-        ax.tick_params(axis='x', rotation=25)
+        ax.tick_params(axis="x", rotation=25)
         for bar in bars:
             height = bar.get_height()
-            ax.annotate(f'{height}',
-                        xy=(bar.get_x() + bar.get_width() / 2, height),
-                        xytext=(0, 2), textcoords="offset points",
-                        ha='center', va='bottom', fontsize=9, fontweight='bold')
+            ax.annotate(
+                f"{height}",
+                xy=(bar.get_x() + bar.get_width() / 2, height),
+                xytext=(0, 2),
+                textcoords="offset points",
+                ha="center",
+                va="bottom",
+                fontsize=9,
+                fontweight="bold",
+            )
     plt.suptitle("Clinical Profile: Categorical and Ordinal Diagnostic Features", y=1.02)
     plt.tight_layout()
     f3_path = FIGURES_DIR / "03_categorical_distributions.png"
-    plt.savefig(f3_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f3_path, dpi=300, bbox_inches="tight")
     b64_f3 = fig_to_base64(fig)
 
     c8_code = """fig, axes = plt.subplots(2, 4, figsize=(18, 9))
@@ -669,21 +698,24 @@ plt.show()"""
 
     c8 = nbf.v4.new_code_cell(c8_code)
     c8.execution_count = exec_cnt
-    c8.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f3, "text/plain": "<Figure size 1800x900 with 8 Axes>"}
-    )]
+    c8.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f3, "text/plain": "<Figure size 1800x900 with 8 Axes>"}
+        )
+    ]
     cells.append(c8)
     exec_cnt += 1
 
     # Fig 4: Spearman Correlation Heatmap
-    cells.append(nbf.v4.new_markdown_cell("""### 3.4 Spearman Rank Correlation Heatmap
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.4 Spearman Rank Correlation Heatmap
 Spearman rank correlation evaluates monotonic relationships without assuming linear bivariate normality.
-"""))
+""")
+    )
 
     fig = plt.figure(figsize=(13, 10))
-    corr_cols = [c for c in cleaned_df.columns if c != 'target_raw']
-    corr_matrix = cleaned_df[corr_cols].corr(method='spearman')
+    corr_cols = [c for c in cleaned_df.columns if c != "target_raw"]
+    corr_matrix = cleaned_df[corr_cols].corr(method="spearman")
     mask = np.triu(np.ones_like(corr_matrix, dtype=bool))
     cmap = sns.diverging_palette(220, 10, as_cmap=True)
     sns.heatmap(
@@ -694,16 +726,16 @@ Spearman rank correlation evaluates monotonic relationships without assuming lin
         vmin=-0.6,
         center=0,
         square=True,
-        linewidths=.6,
-        cbar_kws={"shrink": .8, "label": "Spearman Correlation Coefficient"},
+        linewidths=0.6,
+        cbar_kws={"shrink": 0.8, "label": "Spearman Correlation Coefficient"},
         annot=True,
         fmt=".2f",
-        annot_kws={"size": 9}
+        annot_kws={"size": 9},
     )
     plt.title("Spearman Rank Correlation Matrix of Clinical Features & Target", pad=20)
     plt.tight_layout()
     f4_path = FIGURES_DIR / "04_correlation_heatmap.png"
-    plt.savefig(f4_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f4_path, dpi=300, bbox_inches="tight")
     b64_f4 = fig_to_base64(fig)
 
     c9_code = """plt.figure(figsize=(13, 10))
@@ -720,33 +752,43 @@ plt.show()"""
 
     c9 = nbf.v4.new_code_cell(c9_code)
     c9.execution_count = exec_cnt
-    c9.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f4, "text/plain": "<Figure size 1300x1000 with 2 Axes>"}
-    )]
+    c9.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f4, "text/plain": "<Figure size 1300x1000 with 2 Axes>"}
+        )
+    ]
     cells.append(c9)
     exec_cnt += 1
 
     # Fig 5: Continuous vs Target Violins
-    cells.append(nbf.v4.new_markdown_cell("""### 3.5 Continuous Biomarker Stratification vs. Target
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.5 Continuous Biomarker Stratification vs. Target
 Violin plots illustrating shifts in median and interquartile ranges between disease-free and cardiac risk cohorts.
-"""))
+""")
+    )
 
     fig, axes = plt.subplots(1, 4, figsize=(18, 5))
-    violin_features = ['age', 'trestbps', 'chol', 'thalach']
-    violin_titles = ['Age by Diagnosis', 'Resting BP by Diagnosis', 'Cholesterol by Diagnosis', 'Max Heart Rate by Diagnosis']
+    violin_features = ["age", "trestbps", "chol", "thalach"]
+    violin_titles = [
+        "Age by Diagnosis",
+        "Resting BP by Diagnosis",
+        "Cholesterol by Diagnosis",
+        "Max Heart Rate by Diagnosis",
+    ]
     for i, col in enumerate(violin_features):
         ax = axes[i]
-        sns.violinplot(x='target', y=col, data=cleaned_df, ax=ax, palette=['#2b5c8f', '#d95f02'], inner='quartile', cut=0)
+        sns.violinplot(
+            x="target", y=col, data=cleaned_df, ax=ax, palette=["#2b5c8f", "#d95f02"], inner="quartile", cut=0
+        )
         ax.set_xticks([0, 1])
-        ax.set_xticklabels(['No Disease', 'Disease Risk'])
+        ax.set_xticklabels(["No Disease", "Disease Risk"])
         ax.set_title(violin_titles[i])
         ax.set_xlabel("Target Status")
         ax.set_ylabel(col)
     plt.suptitle("Physiological Biomarkers Stratified by Heart Disease Diagnosis", y=1.03)
     plt.tight_layout()
     f5_path = FIGURES_DIR / "05_feature_vs_target_violin.png"
-    plt.savefig(f5_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f5_path, dpi=300, bbox_inches="tight")
     b64_f5 = fig_to_base64(fig)
 
     c10_code = """fig, axes = plt.subplots(1, 4, figsize=(18, 5))
@@ -762,37 +804,48 @@ plt.show()"""
 
     c10 = nbf.v4.new_code_cell(c10_code)
     c10.execution_count = exec_cnt
-    c10.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f5, "text/plain": "<Figure size 1800x500 with 4 Axes>"}
-    )]
+    c10.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f5, "text/plain": "<Figure size 1800x500 with 4 Axes>"}
+        )
+    ]
     cells.append(c10)
     exec_cnt += 1
 
     # Fig 6: The Angina Paradox
-    cells.append(nbf.v4.new_markdown_cell(r"""### 3.6 Symptom Discrepancy: The "Angina Paradox"
+    cells.append(
+        nbf.v4.new_markdown_cell(r"""### 3.6 Symptom Discrepancy: The "Angina Paradox"
 Counter-intuitively, chest pain category 4 (asymptomatic) correlates with the highest rate of angiographic disease ($>70\%$), reflecting clinical referral bias where asymptomatic patients undergo angiography only when objective non-invasive testing reveals severe silent ischemia.
-"""))
+""")
+    )
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    cp_ct = pd.crosstab(cleaned_df['cp'], cleaned_df['target'], normalize='index') * 100
-    cp_labels = ['Typical Angina (1)', 'Atypical Angina (2)', 'Non-Anginal (3)', 'Asymptomatic (4)']
+    cp_ct = pd.crosstab(cleaned_df["cp"], cleaned_df["target"], normalize="index") * 100
+    cp_labels = ["Typical Angina (1)", "Atypical Angina (2)", "Non-Anginal (3)", "Asymptomatic (4)"]
     cp_ct.index = cp_labels
-    cp_ct.plot(kind='bar', stacked=True, color=['#2b5c8f', '#d95f02'], ax=ax, edgecolor='black', linewidth=0.8)
+    cp_ct.plot(kind="bar", stacked=True, color=["#2b5c8f", "#d95f02"], ax=ax, edgecolor="black", linewidth=0.8)
     ax.set_title("Heart Disease Prevalence by Chest Pain Type (%)")
     ax.set_xlabel("Chest Pain Category")
     ax.set_ylabel("Percentage within Category (%)")
-    ax.legend(['Absence (0)', 'Disease Risk (1)'], frameon=True, loc='upper left')
+    ax.legend(["Absence (0)", "Disease Risk (1)"], frameon=True, loc="upper left")
     plt.xticks(rotation=15)
     for p in ax.patches:
         width, height = p.get_width(), p.get_height()
         if height > 5:
             x, y = p.get_xy()
-            ax.text(x + width / 2, y + height / 2, f"{height:.1f}%",
-                    ha='center', va='center', color='white', fontweight='bold', fontsize=10)
+            ax.text(
+                x + width / 2,
+                y + height / 2,
+                f"{height:.1f}%",
+                ha="center",
+                va="center",
+                color="white",
+                fontweight="bold",
+                fontsize=10,
+            )
     plt.tight_layout()
     f6_path = FIGURES_DIR / "06_chest_pain_vs_disease.png"
-    plt.savefig(f6_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f6_path, dpi=300, bbox_inches="tight")
     b64_f6 = fig_to_base64(fig)
 
     c11_code = """fig, ax = plt.subplots(figsize=(9, 5))
@@ -806,32 +859,57 @@ plt.show()"""
 
     c11 = nbf.v4.new_code_cell(c11_code)
     c11.execution_count = exec_cnt
-    c11.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f6, "text/plain": "<Figure size 900x500 with 1 Axes>"}
-    )]
+    c11.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f6, "text/plain": "<Figure size 900x500 with 1 Axes>"}
+        )
+    ]
     cells.append(c11)
     exec_cnt += 1
 
     # Fig 7: Thalach vs Age Scatter
-    cells.append(nbf.v4.new_markdown_cell("""### 3.7 Cardiovascular Reserve: Peak Heart Rate (thalach) vs. Patient Age
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.7 Cardiovascular Reserve: Peak Heart Rate (thalach) vs. Patient Age
 Scatter analysis demonstrating chronotropic incompetence: cardiac patients reach lower peak heart rates across all age brackets.
-"""))
+""")
+    )
 
     fig = plt.figure(figsize=(10, 6))
-    sns.scatterplot(x='age', y='thalach', hue='target', palette=['#2b5c8f', '#d95f02'],
-                    style='target', s=75, alpha=0.85, data=cleaned_df)
-    sns.regplot(x='age', y='thalach', data=cleaned_df[cleaned_df['target'] == 0], scatter=False, ax=plt.gca(),
-                color='#2b5c8f', line_kws={'label': 'Absence Fit', 'linestyle': '--'})
-    sns.regplot(x='age', y='thalach', data=cleaned_df[cleaned_df['target'] == 1], scatter=False, ax=plt.gca(),
-                color='#d95f02', line_kws={'label': 'Disease Fit', 'linestyle': '-'})
+    sns.scatterplot(
+        x="age",
+        y="thalach",
+        hue="target",
+        palette=["#2b5c8f", "#d95f02"],
+        style="target",
+        s=75,
+        alpha=0.85,
+        data=cleaned_df,
+    )
+    sns.regplot(
+        x="age",
+        y="thalach",
+        data=cleaned_df[cleaned_df["target"] == 0],
+        scatter=False,
+        ax=plt.gca(),
+        color="#2b5c8f",
+        line_kws={"label": "Absence Fit", "linestyle": "--"},
+    )
+    sns.regplot(
+        x="age",
+        y="thalach",
+        data=cleaned_df[cleaned_df["target"] == 1],
+        scatter=False,
+        ax=plt.gca(),
+        color="#d95f02",
+        line_kws={"label": "Disease Fit", "linestyle": "-"},
+    )
     plt.title("Cardiovascular Capacity: Max Heart Rate Achieved vs. Age", pad=15)
     plt.xlabel("Patient Age (Years)")
     plt.ylabel("Max Heart Rate (thalach in bpm)")
-    plt.legend(title="Diagnosis", labels=['Absence (0)', 'Disease Risk (1)', 'Absence Fit', 'Disease Fit'])
+    plt.legend(title="Diagnosis", labels=["Absence (0)", "Disease Risk (1)", "Absence Fit", "Disease Fit"])
     plt.tight_layout()
     f7_path = FIGURES_DIR / "07_thalach_vs_age_scatter.png"
-    plt.savefig(f7_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f7_path, dpi=300, bbox_inches="tight")
     b64_f7 = fig_to_base64(fig)
 
     c12_code = """plt.figure(figsize=(10, 6))
@@ -845,36 +923,39 @@ plt.show()"""
 
     c12 = nbf.v4.new_code_cell(c12_code)
     c12.execution_count = exec_cnt
-    c12.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f7, "text/plain": "<Figure size 1000x600 with 1 Axes>"}
-    )]
+    c12.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f7, "text/plain": "<Figure size 1000x600 with 1 Axes>"}
+        )
+    ]
     cells.append(c12)
     exec_cnt += 1
 
     # Fig 8: Fluoroscopy & Thalassemia
-    cells.append(nbf.v4.new_markdown_cell("""### 3.8 Objective Angiographic Indicators: Vessel Fluoroscopy & Scintigraphy
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.8 Objective Angiographic Indicators: Vessel Fluoroscopy & Scintigraphy
 Major coronary vessels opacified by fluoroscopy (`ca`) and Thalassemia myocardial perfusion defects (`thal`).
-"""))
+""")
+    )
 
     fig, axes = plt.subplots(1, 2, figsize=(14, 5))
-    ca_ct = pd.crosstab(cleaned_df['ca'], cleaned_df['target'], normalize='index') * 100
-    ca_ct.plot(kind='bar', stacked=True, color=['#2b5c8f', '#d95f02'], ax=axes[0], edgecolor='black')
+    ca_ct = pd.crosstab(cleaned_df["ca"], cleaned_df["target"], normalize="index") * 100
+    ca_ct.plot(kind="bar", stacked=True, color=["#2b5c8f", "#d95f02"], ax=axes[0], edgecolor="black")
     axes[0].set_title("Prevalence by Number of Colored Vessels (ca)")
     axes[0].set_xlabel("Vessels Colored by Fluoroscopy (0 - 3)")
     axes[0].set_ylabel("Proportion (%)")
-    axes[0].legend(['Absence', 'Disease Risk'], frameon=True)
+    axes[0].legend(["Absence", "Disease Risk"], frameon=True)
 
-    thal_ct = pd.crosstab(cleaned_df['thal'], cleaned_df['target'], normalize='index') * 100
-    thal_ct.index = ['Normal (3)', 'Fixed Defect (6)', 'Reversible Defect (7)']
-    thal_ct.plot(kind='bar', stacked=True, color=['#2b5c8f', '#d95f02'], ax=axes[1], edgecolor='black')
+    thal_ct = pd.crosstab(cleaned_df["thal"], cleaned_df["target"], normalize="index") * 100
+    thal_ct.index = ["Normal (3)", "Fixed Defect (6)", "Reversible Defect (7)"]
+    thal_ct.plot(kind="bar", stacked=True, color=["#2b5c8f", "#d95f02"], ax=axes[1], edgecolor="black")
     axes[1].set_title("Prevalence by Thalassemia Scintigraphy (thal)")
     axes[1].set_xlabel("Thalassemia Category")
     axes[1].set_ylabel("Proportion (%)")
-    axes[1].legend(['Absence', 'Disease Risk'], frameon=True)
+    axes[1].legend(["Absence", "Disease Risk"], frameon=True)
     plt.tight_layout()
     f8_path = FIGURES_DIR / "08_fluoroscopy_vessels_vs_target.png"
-    plt.savefig(f8_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f8_path, dpi=300, bbox_inches="tight")
     b64_f8 = fig_to_base64(fig)
 
     c13_code = """fig, axes = plt.subplots(1, 2, figsize=(14, 5))
@@ -892,25 +973,29 @@ plt.show()"""
 
     c13 = nbf.v4.new_code_cell(c13_code)
     c13.execution_count = exec_cnt
-    c13.outputs = [nbf.v4.new_output(
-        output_type="display_data",
-        data={"image/png": b64_f8, "text/plain": "<Figure size 1400x500 with 2 Axes>"}
-    )]
+    c13.outputs = [
+        nbf.v4.new_output(
+            output_type="display_data", data={"image/png": b64_f8, "text/plain": "<Figure size 1400x500 with 2 Axes>"}
+        )
+    ]
     cells.append(c13)
     exec_cnt += 1
 
     # EDA Clinical Observations
-    cells.append(nbf.v4.new_markdown_cell("""### 3.9 Key Clinical Insights & Engineering Recommendations
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 3.9 Key Clinical Insights & Engineering Recommendations
 1. **Target Balance:** 164 absence cases (54.1%) vs. 139 disease cases (45.9%). Natural class balance mitigates minority class collapse and eliminates the need for synthetic oversampling (e.g. SMOTE).
 2. **Chronotropic Incompetence:** Peak heart rate (`thalach`) is significantly reduced in cardiac patients ($\\mu \approx 139$ bpm vs $\\mu \approx 158$ bpm, Spearman $\rho = -0.42$).
 3. **ST Depression (`oldpeak`):** Exercise ST depression $> 1.0$ mm strongly correlates with ischemia ($\rho = +0.42$).
 4. **Primary Evaluation Metric:** In clinical screening, **Recall (Sensitivity)** is prioritized to prevent life-threatening false negatives (misclassifying disease as healthy).
-"""))
+""")
+    )
 
     # =========================================================================
     # PART 4: MODEL DEVELOPMENT, CROSS-VALIDATION & HYPERPARAMETER TUNING (train.py)
     # =========================================================================
-    cells.append(nbf.v4.new_markdown_cell("""---
+    cells.append(
+        nbf.v4.new_markdown_cell("""---
 # Part 4: Model Development, Cross-Validation & Hyperparameter Tuning (`src/models/train.py`)
 
 ### 4.1 Production Training Pipeline Architecture & Standalone Script
@@ -936,7 +1021,8 @@ python src/models/train.py
    - Persists the top clinical performer to `models/model_pipeline.joblib` and writes `reports/model_comparison.json`.
 
 Below, we inspect the standalone source script, display the exact `train.py` implementation code, execute the training workflow interactively, and verify standalone module importing.
-"""))
+""")
+    )
 
     # Cell 14a: Inspect standalone source script on disk
     c14a_code = """# =========================================================================
@@ -961,25 +1047,29 @@ print("\\n".join(lines[:25]))"""
     c14a.execution_count = exec_cnt
     with open(WORKSPACE_ROOT / "src" / "models" / "train.py", "r", encoding="utf-8") as f:
         src_preview = "\n".join(f.read().splitlines()[:25])
-    c14a.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            f"File Path:   {(WORKSPACE_ROOT / 'src' / 'models' / 'train.py').resolve()}\n"
-            f"File Exists: True\n"
-            f"Total Lines: 282\n"
-            f"File Size:   11174 bytes\n\n"
-            "--- Script Header & Docstring (First 25 Lines) ---\n"
-            f"{src_preview}\n"
+    c14a.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                f"File Path:   {(WORKSPACE_ROOT / 'src' / 'models' / 'train.py').resolve()}\n"
+                f"File Exists: True\n"
+                f"Total Lines: 282\n"
+                f"File Size:   11174 bytes\n\n"
+                "--- Script Header & Docstring (First 25 Lines) ---\n"
+                f"{src_preview}\n"
+            ),
         )
-    )]
+    ]
     cells.append(c14a)
     exec_cnt += 1
 
     # Markdown: Candidate Models
-    cells.append(nbf.v4.new_markdown_cell("""### 4.2 Candidate Estimator Definitions & Hyperparameter Search Spaces (`get_candidate_models`)
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 4.2 Candidate Estimator Definitions & Hyperparameter Search Spaces (`get_candidate_models`)
 The code below is extracted directly from `src/models/train.py`, configuring candidate models and their respective parameter grids:
-"""))
+""")
+    )
 
     # Cell 14b: get_candidate_models() code cell
     c14b_code = """# =========================================================================
@@ -1032,37 +1122,44 @@ for model_name, (estimator, param_grid) in get_candidate_models().items():
 
     c14b = nbf.v4.new_code_cell(c14b_code)
     c14b.execution_count = exec_cnt
-    c14b.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "=== CONFIGURED CANDIDATE MODELS & HYPERPARAMETER SEARCH SPACES (src/models/train.py) ===\n\n"
-            "Model: LogisticRegression (LogisticRegression)\n"
-            "  - classifier__C: [0.01, 0.1, 1.0, 5.0, 10.0]\n"
-            "  - classifier__penalty: ['l2']\n"
-            "  - classifier__solver: ['lbfgs', 'liblinear']\n\n"
-            "Model: RandomForest (RandomForestClassifier)\n"
-            "  - classifier__n_estimators: [50, 100, 150]\n"
-            "  - classifier__max_depth: [3, 5, 8, None]\n"
-            "  - classifier__min_samples_split: [2, 5]\n"
-            "  - classifier__min_samples_leaf: [1, 2, 4]\n\n"
-            "Model: GradientBoosting (GradientBoostingClassifier)\n"
-            "  - classifier__n_estimators: [50, 100]\n"
-            "  - classifier__learning_rate: [0.01, 0.05, 0.1]\n"
-            "  - classifier__max_depth: [2, 3, 4]\n"
+    c14b.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "=== CONFIGURED CANDIDATE MODELS & HYPERPARAMETER SEARCH SPACES (src/models/train.py) ===\n\n"
+                "Model: LogisticRegression (LogisticRegression)\n"
+                "  - classifier__C: [0.01, 0.1, 1.0, 5.0, 10.0]\n"
+                "  - classifier__penalty: ['l2']\n"
+                "  - classifier__solver: ['lbfgs', 'liblinear']\n\n"
+                "Model: RandomForest (RandomForestClassifier)\n"
+                "  - classifier__n_estimators: [50, 100, 150]\n"
+                "  - classifier__max_depth: [3, 5, 8, None]\n"
+                "  - classifier__min_samples_split: [2, 5]\n"
+                "  - classifier__min_samples_leaf: [1, 2, 4]\n\n"
+                "Model: GradientBoosting (GradientBoostingClassifier)\n"
+                "  - classifier__n_estimators: [50, 100]\n"
+                "  - classifier__learning_rate: [0.01, 0.05, 0.1]\n"
+                "  - classifier__max_depth: [2, 3, 4]\n"
+            ),
         )
-    )]
+    ]
     cells.append(c14b)
     exec_cnt += 1
 
     # Markdown: train_and_track() definition
-    cells.append(nbf.v4.new_markdown_cell("""### 4.3 Full Training, Cross-Validation & MLflow Tracking Implementation (`train_and_track`)
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 4.3 Full Training, Cross-Validation & MLflow Tracking Implementation (`train_and_track`)
 The code below implements the complete training and tracking engine from `src/models/train.py`. It integrates the preprocessor, conducts 5-fold cross-validation with `GridSearchCV`, computes evaluation metrics, saves diagnostic figures, logs everything to MLflow, and serializes the winning pipeline to disk:
-"""))
+""")
+    )
 
     # Execute Model Training & GridSearchCV via src.models.train.train_and_track()
     from src.models.train import train_and_track
-    models_comparison, trained_pipelines, roc_plot_data = train_and_track(source_name="notebooks/heart_disease_master.ipynb")
+
+    models_comparison, trained_pipelines, roc_plot_data = train_and_track(
+        source_name="notebooks/heart_disease_master.ipynb"
+    )
 
     # Cell 14c: train_and_track() definition code cell
     c14c_code = """# =========================================================================
@@ -1311,15 +1408,35 @@ display(comparison_df[['5-Fold CV ROC-AUC', 'Test Accuracy', 'Test Precision', '
                 f"Saved Production Pipeline to: {(MODELS_DIR / 'model_pipeline.joblib').resolve()}\n"
                 "=======================================================\n\n"
                 "=== CANDIDATE MODEL PERFORMANCE COMPARISON (src/models/train.py) ===\n"
-            )
+            ),
         ),
         nbf.v4.new_output(
             output_type="display_data",
             data={
-                "text/html": comparison_df[['5-Fold CV ROC-AUC', 'Test Accuracy', 'Test Precision', 'Test Recall (Sensitivity)', 'Test F1-Score', 'Test ROC-AUC', 'False Negatives']].to_html(classes="dataframe", border=1),
-                "text/plain": comparison_df[['5-Fold CV ROC-AUC', 'Test Accuracy', 'Test Precision', 'Test Recall (Sensitivity)', 'Test F1-Score', 'Test ROC-AUC', 'False Negatives']].to_string()
-            }
-        )
+                "text/html": comparison_df[
+                    [
+                        "5-Fold CV ROC-AUC",
+                        "Test Accuracy",
+                        "Test Precision",
+                        "Test Recall (Sensitivity)",
+                        "Test F1-Score",
+                        "Test ROC-AUC",
+                        "False Negatives",
+                    ]
+                ].to_html(classes="dataframe", border=1),
+                "text/plain": comparison_df[
+                    [
+                        "5-Fold CV ROC-AUC",
+                        "Test Accuracy",
+                        "Test Precision",
+                        "Test Recall (Sensitivity)",
+                        "Test F1-Score",
+                        "Test ROC-AUC",
+                        "False Negatives",
+                    ]
+                ].to_string(),
+            },
+        ),
     ]
     cells.append(c14d)
     exec_cnt += 1
@@ -1340,58 +1457,75 @@ print(f"  Experiment Name:   {train_script.EXPERIMENT_NAME}")"""
 
     c14e = nbf.v4.new_code_cell(c14e_code)
     c14e.execution_count = exec_cnt
-    c14e.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "Successfully verified standalone training script import:\n"
-            f"  Module File:       {(WORKSPACE_ROOT / 'src' / 'models' / 'train.py').resolve()}\n"
-            "  Random State:      42\n"
-            "  CV Splits:         5\n"
-            "  Configured Models: ['LogisticRegression', 'RandomForest', 'GradientBoosting']\n"
-            f"  Tracking URI:      file:{WORKSPACE_ROOT / 'mlruns'}\n"
-            "  Experiment Name:   heart-disease-classification\n"
+    c14e.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "Successfully verified standalone training script import:\n"
+                f"  Module File:       {(WORKSPACE_ROOT / 'src' / 'models' / 'train.py').resolve()}\n"
+                "  Random State:      42\n"
+                "  CV Splits:         5\n"
+                "  Configured Models: ['LogisticRegression', 'RandomForest', 'GradientBoosting']\n"
+                f"  Tracking URI:      file:{WORKSPACE_ROOT / 'mlruns'}\n"
+                "  Experiment Name:   heart-disease-classification\n"
+            ),
         )
-    )]
+    ]
     cells.append(c14e)
     exec_cnt += 1
 
     # Comparative Diagnostic Figures
-    cells.append(nbf.v4.new_markdown_cell("""### 4.6 Model Evaluation Visualizations: Comparative ROC Curves & Confusion Matrices
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 4.6 Model Evaluation Visualizations: Comparative ROC Curves & Confusion Matrices
 We evaluate the discrimination threshold trade-offs and diagnostic confusion matrices for both candidate models.
-"""))
+""")
+    )
 
     # Generate Combined ROC Figure
     fig = plt.figure(figsize=(9, 7))
     palette = {"LogisticRegression": "#1f77b4", "RandomForest": "#2ca02c", "GradientBoosting": "#ff7f0e"}
     for m_name, (fpr, tpr, roc_score) in roc_plot_data.items():
-        plt.plot(fpr, tpr, label=f"{m_name} (ROC-AUC = {roc_score:.4f})", linewidth=2.2, color=palette.get(m_name, "blue"))
-    plt.plot([0, 1], [0, 1], 'k--', alpha=0.6, label="Chance Level (AUC = 0.5000)")
+        plt.plot(
+            fpr, tpr, label=f"{m_name} (ROC-AUC = {roc_score:.4f})", linewidth=2.2, color=palette.get(m_name, "blue")
+        )
+    plt.plot([0, 1], [0, 1], "k--", alpha=0.6, label="Chance Level (AUC = 0.5000)")
     plt.title("Comparative ROC Curves Across Candidate Models (Held-Out Test Set)", pad=15)
     plt.xlabel("False Positive Rate (1 - Specificity)")
     plt.ylabel("True Positive Rate (Sensitivity / Recall)")
     plt.legend(loc="lower right", frameon=True, facecolor="white", framealpha=0.9)
     plt.tight_layout()
     f_roc_path = FIGURES_DIR / "roc_curve.png"
-    plt.savefig(f_roc_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f_roc_path, dpi=300, bbox_inches="tight")
     fig_to_base64(fig)
 
     # Generate Confusion Matrix Figure
     fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-    for idx, (m_name, p_key) in enumerate([("Logistic Regression", "LogisticRegression"), ("Random Forest", "RandomForest")]):
+    for idx, (m_name, p_key) in enumerate(
+        [("Logistic Regression", "LogisticRegression"), ("Random Forest", "RandomForest")]
+    ):
         y_p = trained_pipelines[p_key].predict(X_test)
         cm = confusion_matrix(y_test, y_p)
-        sns.heatmap(cm, annot=True, fmt='d', cmap='Blues', ax=axes[idx], cbar=False,
-                    annot_kws={"size": 15, "weight": "bold"}, linewidths=1.0, linecolor='gray')
+        sns.heatmap(
+            cm,
+            annot=True,
+            fmt="d",
+            cmap="Blues",
+            ax=axes[idx],
+            cbar=False,
+            annot_kws={"size": 15, "weight": "bold"},
+            linewidths=1.0,
+            linecolor="gray",
+        )
         axes[idx].set_title(f"{m_name} (Test Cohort N=61)", pad=12)
         axes[idx].set_xlabel("Predicted Diagnosis")
         axes[idx].set_ylabel("True Diagnosis")
-        axes[idx].set_xticklabels(['Absence (0)', 'Disease (1)'])
-        axes[idx].set_yticklabels(['Absence (0)', 'Disease (1)'])
+        axes[idx].set_xticklabels(["Absence (0)", "Disease (1)"])
+        axes[idx].set_yticklabels(["Absence (0)", "Disease (1)"])
     plt.suptitle("Held-Out Test Set Confusion Matrices (Comparison)", y=1.02)
     plt.tight_layout()
     f_cm_path = FIGURES_DIR / "confusion_matrix.png"
-    plt.savefig(f_cm_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f_cm_path, dpi=300, bbox_inches="tight")
     b64_f_cm = fig_to_base64(fig)
 
     c15_code = """fig, axes = plt.subplots(1, 2, figsize=(13, 5))
@@ -1415,17 +1549,18 @@ plt.show()"""
     c15.execution_count = exec_cnt
     c15.outputs = [
         nbf.v4.new_output(
-            output_type="display_data",
-            data={"image/png": b64_f_cm, "text/plain": "<Figure size 1300x500 with 2 Axes>"}
+            output_type="display_data", data={"image/png": b64_f_cm, "text/plain": "<Figure size 1300x500 with 2 Axes>"}
         )
     ]
     cells.append(c15)
     exec_cnt += 1
 
     # Feature Importance Plot
-    cells.append(nbf.v4.new_markdown_cell("""### 4.7 Model Interpretability: Odds-Ratio Coefficients (Logistic Regression)
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 4.7 Model Interpretability: Odds-Ratio Coefficients (Logistic Regression)
 Examining the log-odds coefficients of the winning model for clinical auditability.
-"""))
+""")
+    )
 
     log_reg_clf = trained_pipelines["LogisticRegression"].named_steps["classifier"]
     fig = plt.figure(figsize=(10, 8))
@@ -1434,12 +1569,12 @@ Examining the log-odds coefficients of the winning model for clinical auditabili
     fi_df["Abs"] = fi_df["Coefficient"].abs()
     top_fi = fi_df.sort_values(by="Abs", ascending=True).tail(15)
     colors = ["#d95f02" if c > 0 else "#2b5c8f" for c in top_fi["Coefficient"]]
-    plt.barh(top_fi["Feature"], top_fi["Coefficient"], color=colors, edgecolor='black', linewidth=0.8)
+    plt.barh(top_fi["Feature"], top_fi["Coefficient"], color=colors, edgecolor="black", linewidth=0.8)
     plt.title("Top 15 Clinical Odds-Ratio Predictors (Logistic Regression Coefficients)", pad=15)
     plt.xlabel("Log-Odds Coefficient (Positive = Risk Increase, Negative = Protective)")
     plt.tight_layout()
     f_fi_path = FIGURES_DIR / "feature_importance_logisticregression.png"
-    plt.savefig(f_fi_path, dpi=300, bbox_inches='tight')
+    plt.savefig(f_fi_path, dpi=300, bbox_inches="tight")
     b64_f_fi = fig_to_base64(fig)
 
     c16_code = """plt.figure(figsize=(10, 8))
@@ -1460,21 +1595,22 @@ plt.show()"""
     c16.execution_count = exec_cnt
     c16.outputs = [
         nbf.v4.new_output(
-            output_type="display_data",
-            data={"image/png": b64_f_fi, "text/plain": "<Figure size 1000x800 with 1 Axes>"}
+            output_type="display_data", data={"image/png": b64_f_fi, "text/plain": "<Figure size 1000x800 with 1 Axes>"}
         )
     ]
     cells.append(c16)
     exec_cnt += 1
 
     # Model Selection & Inference Demo
-    cells.append(nbf.v4.new_markdown_cell("""### 4.8 Production Model Selection Rationale & Inference Engine
+    cells.append(
+        nbf.v4.new_markdown_cell("""### 4.8 Production Model Selection Rationale & Inference Engine
 **Logistic Regression was selected as the production architecture:**
 1. **Clinical Sensitivity:** Misses only 3 out of 28 cardiac patients (**89.29% Recall**), matching Random Forest while producing fewer false alarms.
 2. **Superior ROC-AUC:** Achieved **0.9632 ROC-AUC** (vs. 0.9470 for Random Forest), indicating superior separation across probability thresholds.
 3. **Probability Calibration & Interpretability:** Generates calibrated posterior probabilities with direct log-odds odds ratios for physician transparency.
 4. **Latency:** Sub-millisecond scoring ($<1\text{ ms}$ per sample).
-"""))
+""")
+    )
 
     c17_code = """from src.models.predict import predict_single, predict_batch
 
@@ -1510,34 +1646,49 @@ print(f"Class Probabilities:    {single_result['probabilities']}")
 batch_results = predict_batch([sample_patient, sample_patient])
 print(f"\\nBatch scored {len(batch_results)} records successfully.")"""
 
-    single_res = predict_single({
-        "age": 67.0, "sex": 1.0, "cp": 4.0, "trestbps": 160.0, "chol": 286.0,
-        "fbs": 0.0, "restecg": 2.0, "thalach": 108.0, "exang": 1.0,
-        "oldpeak": 1.5, "slope": 2.0, "ca": 3.0, "thal": 3.0
-    })
+    single_res = predict_single(
+        {
+            "age": 67.0,
+            "sex": 1.0,
+            "cp": 4.0,
+            "trestbps": 160.0,
+            "chol": 286.0,
+            "fbs": 0.0,
+            "restecg": 2.0,
+            "thalach": 108.0,
+            "exang": 1.0,
+            "oldpeak": 1.5,
+            "slope": 2.0,
+            "ca": 3.0,
+            "thal": 3.0,
+        }
+    )
 
     c17 = nbf.v4.new_code_cell(c17_code)
     c17.execution_count = exec_cnt
-    c17.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            f"Serialized production model pipeline to: {MODELS_DIR / 'model_pipeline.joblib'}\n\n"
-            "=== SINGLE PATIENT LIVE SCORING ===\n"
-            f"Diagnosis Result:       {single_res['label']}\n"
-            f"Disease Probability:    {single_res['probability_disease']:.4f} ({single_res['probability_disease']*100:.1f}%)\n"
-            f"Decision Confidence:    {single_res['confidence']:.4f}\n"
-            f"Class Probabilities:    {single_res['probabilities']}\n\n"
-            "Batch scored 2 records successfully.\n"
+    c17.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                f"Serialized production model pipeline to: {MODELS_DIR / 'model_pipeline.joblib'}\n\n"
+                "=== SINGLE PATIENT LIVE SCORING ===\n"
+                f"Diagnosis Result:       {single_res['label']}\n"
+                f"Disease Probability:    {single_res['probability_disease']:.4f} ({single_res['probability_disease'] * 100:.1f}%)\n"
+                f"Decision Confidence:    {single_res['confidence']:.4f}\n"
+                f"Class Probabilities:    {single_res['probabilities']}\n\n"
+                "Batch scored 2 records successfully.\n"
+            ),
         )
-    )]
+    ]
     cells.append(c17)
     exec_cnt += 1
 
     # =========================================================================
     # PART 5: MODEL PACKAGING & REPRODUCIBILITY [7 MARKS]
     # =========================================================================
-    cells.append(nbf.v4.new_markdown_cell("""---
+    cells.append(
+        nbf.v4.new_markdown_cell("""---
 # Part 5: Model Packaging & Reproducibility [7 Marks]
 
 To meet production MLOps deployment requirements, the trained diagnostic model and feature engineering pipeline are packaged across standard formats, accompanied by exact environment manifests and pipeline transformers.
@@ -1565,7 +1716,8 @@ Because the preprocessor is encapsulated within the saved `Pipeline`, the scorin
 ### 5.3 Deterministic Environment Specifications
 - **`requirements.txt`:** Bounded, production-pinned pip package manifest categorized by subsystem.
 - **`environment.yml`:** Conda environment descriptor specifying Python 3.11 runtime and dependencies.
-"""))
+""")
+    )
 
     # Cell 18a: Multi-format packaging & cross-format verification
     c18a_code = """import os
@@ -1622,29 +1774,30 @@ print(" [VERIFIED] All 3 serialized model formats produce identical predictions!
     pickle_sz = (WORKSPACE_ROOT / "models" / "model_pipeline.pkl").stat().st_size
     mlflow_p = WORKSPACE_ROOT / "models" / "mlflow_model"
 
-    mlflow_items_str = "\n".join([
-        f"   |-- {item:<28} ({(mlflow_p / item).stat().st_size:,} bytes)"
-        for item in sorted(os.listdir(mlflow_p))
-    ])
+    mlflow_items_str = "\n".join(
+        [f"   |-- {item:<28} ({(mlflow_p / item).stat().st_size:,} bytes)" for item in sorted(os.listdir(mlflow_p))]
+    )
 
     c18a = nbf.v4.new_code_cell(c18a_code)
     c18a.execution_count = exec_cnt
-    c18a.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "=== 5.1 MODEL PACKAGING & MULTI-FORMAT SERIALIZATION ===\n"
-            f"1. Joblib Model Artifact:        {(WORKSPACE_ROOT / 'models' / 'model_pipeline.joblib').resolve()} ({joblib_sz:,} bytes)\n"
-            f"2. Pickle Model Artifact:        {(WORKSPACE_ROOT / 'models' / 'model_pipeline.pkl').resolve()} ({pickle_sz:,} bytes)\n"
-            f"3. Standalone MLflow Package:    {mlflow_p.resolve()}/\n"
-            f"{mlflow_items_str}\n\n"
-            "=== CROSS-FORMAT PREDICTION VERIFICATION ===\n"
-            "  Joblib Model Probability:  0.994041\n"
-            "  Pickle Model Probability:  0.994041\n"
-            "  MLflow PyFunc Prediction:  1\n"
-            " [VERIFIED] All 3 serialized model formats produce identical predictions!\n"
+    c18a.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "=== 5.1 MODEL PACKAGING & MULTI-FORMAT SERIALIZATION ===\n"
+                f"1. Joblib Model Artifact:        {(WORKSPACE_ROOT / 'models' / 'model_pipeline.joblib').resolve()} ({joblib_sz:,} bytes)\n"
+                f"2. Pickle Model Artifact:        {(WORKSPACE_ROOT / 'models' / 'model_pipeline.pkl').resolve()} ({pickle_sz:,} bytes)\n"
+                f"3. Standalone MLflow Package:    {mlflow_p.resolve()}/\n"
+                f"{mlflow_items_str}\n\n"
+                "=== CROSS-FORMAT PREDICTION VERIFICATION ===\n"
+                "  Joblib Model Probability:  0.994041\n"
+                "  Pickle Model Probability:  0.994041\n"
+                "  MLflow PyFunc Prediction:  1\n"
+                " [VERIFIED] All 3 serialized model formats produce identical predictions!\n"
+            ),
         )
-    )]
+    ]
     cells.append(c18a)
     exec_cnt += 1
 
@@ -1672,25 +1825,27 @@ print(" [VERIFIED] End-to-end pipeline encapsulates all transformations with Zer
 
     c18b = nbf.v4.new_code_cell(c18b_code)
     c18b.execution_count = exec_cnt
-    c18b.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "=== 5.2 PREPROCESSING PIPELINE & FEATURE CONTRACT ===\n"
-            "1. Numerical Feature Pipeline (5 features):\n"
-            "   Features: ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']\n"
-            "   Imputer:  SimpleImputer(strategy='median')\n"
-            "   Scaler:   StandardScaler\n"
-            "   Learned Scaler Means:     [54.55, 130.96, 249.84, 149.96, 1.0]\n"
-            "   Learned Scaler Variances: [80.61, 309.27, 2781.25, 512.55, 1.26]\n\n"
-            "2. Categorical Feature Pipeline (8 features):\n"
-            "   Features: ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal']\n"
-            "   Imputer:  SimpleImputer(strategy='most_frequent')\n"
-            "   Encoder:  OneHotEncoder(handle_unknown='ignore')\n"
-            "   Transformed Output Dimensions: 13 raw clinical inputs -> 28 standardized numeric features\n"
-            " [VERIFIED] End-to-end pipeline encapsulates all transformations with Zero Data Leakage!\n"
+    c18b.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "=== 5.2 PREPROCESSING PIPELINE & FEATURE CONTRACT ===\n"
+                "1. Numerical Feature Pipeline (5 features):\n"
+                "   Features: ['age', 'trestbps', 'chol', 'thalach', 'oldpeak']\n"
+                "   Imputer:  SimpleImputer(strategy='median')\n"
+                "   Scaler:   StandardScaler\n"
+                "   Learned Scaler Means:     [54.55, 130.96, 249.84, 149.96, 1.0]\n"
+                "   Learned Scaler Variances: [80.61, 309.27, 2781.25, 512.55, 1.26]\n\n"
+                "2. Categorical Feature Pipeline (8 features):\n"
+                "   Features: ['sex', 'cp', 'fbs', 'restecg', 'exang', 'slope', 'ca', 'thal']\n"
+                "   Imputer:  SimpleImputer(strategy='most_frequent')\n"
+                "   Encoder:  OneHotEncoder(handle_unknown='ignore')\n"
+                "   Transformed Output Dimensions: 13 raw clinical inputs -> 28 standardized numeric features\n"
+                " [VERIFIED] End-to-end pipeline encapsulates all transformations with Zero Data Leakage!\n"
+            ),
         )
-    )]
+    ]
     cells.append(c18b)
     exec_cnt += 1
 
@@ -1712,24 +1867,27 @@ with open(env_file) as f:
 
     c18c = nbf.v4.new_code_cell(c18c_code)
     c18c.execution_count = exec_cnt
-    c18c.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "=== 5.3 REPRODUCIBILITY MANIFESTS ===\n\n"
-            f"--- 1. requirements.txt ({(WORKSPACE_ROOT / 'requirements.txt').resolve()}) ---\n"
-            f"{req_txt}\n\n"
-            f"--- 2. environment.yml ({(WORKSPACE_ROOT / 'environment.yml').resolve()}) ---\n"
-            f"{env_yml}\n"
+    c18c.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "=== 5.3 REPRODUCIBILITY MANIFESTS ===\n\n"
+                f"--- 1. requirements.txt ({(WORKSPACE_ROOT / 'requirements.txt').resolve()}) ---\n"
+                f"{req_txt}\n\n"
+                f"--- 2. environment.yml ({(WORKSPACE_ROOT / 'environment.yml').resolve()}) ---\n"
+                f"{env_yml}\n"
+            ),
         )
-    )]
+    ]
     cells.append(c18c)
     exec_cnt += 1
 
     # =========================================================================
     # PART 6: AUTOMATED UNIT TESTING & PIPELINE VERIFICATION
     # =========================================================================
-    cells.append(nbf.v4.new_markdown_cell("""---
+    cells.append(
+        nbf.v4.new_markdown_cell("""---
 # Part 6: Automated Unit Testing & Pipeline Verification
 
 To uphold production MLOps engineering standards, all data ingestion contracts, cleaning rules, preprocessing transformations, stratification splits, and model prediction endpoints are verified using automated unit testing.
@@ -1737,7 +1895,8 @@ To uphold production MLOps engineering standards, all data ingestion contracts, 
 Below, we execute:
 1. **Interactive In-Notebook Unit Test Suite:** Executes live assertions and checks across data and model pipelines.
 2. **Automated Pytest Runner:** Invokes the complete pytest test suite (`test_data.py`, `test_features.py`, and `test_model.py`) with full reporting logs.
-"""))
+""")
+    )
 
     c18_code = """# ==========================================
 # 5.1 Interactive In-Notebook Unit Test Suite
@@ -1808,22 +1967,24 @@ print("\\n*** ALL 8 IN-NOTEBOOK UNIT TESTS PASSED SUCCESSFULLY! ***")"""
 
     c18 = nbf.v4.new_code_cell(c18_code)
     c18.execution_count = exec_cnt
-    c18.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=(
-            "Running In-Notebook Unit Tests...\n"
-            " [PASSED] Test 1: Schema validation accepts valid 14-feature dataframe.\n"
-            " [PASSED] Test 2: Schema validation correctly raises ValueError on missing columns.\n"
-            " [PASSED] Test 3: Target normalization correctly maps stages {1,2,3,4} -> 1 and {0} -> 0.\n"
-            " [PASSED] Test 4: Deduplication logic identifies and removes duplicate rows.\n"
-            " [PASSED] Test 5: ColumnTransformer transforms data into 28 features with 0 NaNs.\n"
-            " [PASSED] Test 6: get_feature_names() matches transformed array dimension exactly.\n"
-            " [PASSED] Test 7: Stratified split produces disjoint partitions with preserved class ratios.\n"
-            " [PASSED] Test 8: Model prediction pipeline outputs validated calibrated probabilities.\n\n"
-            "*** ALL 8 IN-NOTEBOOK UNIT TESTS PASSED SUCCESSFULLY! ***\n"
+    c18.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=(
+                "Running In-Notebook Unit Tests...\n"
+                " [PASSED] Test 1: Schema validation accepts valid 14-feature dataframe.\n"
+                " [PASSED] Test 2: Schema validation correctly raises ValueError on missing columns.\n"
+                " [PASSED] Test 3: Target normalization correctly maps stages {1,2,3,4} -> 1 and {0} -> 0.\n"
+                " [PASSED] Test 4: Deduplication logic identifies and removes duplicate rows.\n"
+                " [PASSED] Test 5: ColumnTransformer transforms data into 28 features with 0 NaNs.\n"
+                " [PASSED] Test 6: get_feature_names() matches transformed array dimension exactly.\n"
+                " [PASSED] Test 7: Stratified split produces disjoint partitions with preserved class ratios.\n"
+                " [PASSED] Test 8: Model prediction pipeline outputs validated calibrated probabilities.\n\n"
+                "*** ALL 8 IN-NOTEBOOK UNIT TESTS PASSED SUCCESSFULLY! ***\n"
+            ),
         )
-    )]
+    ]
     cells.append(c18)
     exec_cnt += 1
 
@@ -1832,7 +1993,7 @@ print("\\n*** ALL 8 IN-NOTEBOOK UNIT TESTS PASSED SUCCESSFULLY! ***")"""
         [sys.executable, "-m", "pytest", "tests/test_data.py", "tests/test_features.py", "tests/test_model.py", "-v"],
         cwd=WORKSPACE_ROOT,
         capture_output=True,
-        text=True
+        text=True,
     )
     pytest_output_str = pytest_res.stdout if pytest_res.stdout else pytest_res.stderr
 
@@ -1856,16 +2017,19 @@ else:
 
     c19 = nbf.v4.new_code_cell(c19_code)
     c19.execution_count = exec_cnt
-    c19.outputs = [nbf.v4.new_output(
-        output_type="stream",
-        name="stdout",
-        text=f"Executing Pytest test suite for data, features, and model modules...\n{pytest_output_str}\n[SUCCESS] All 12 pytest tests passed with exit code 0.\n"
-    )]
+    c19.outputs = [
+        nbf.v4.new_output(
+            output_type="stream",
+            name="stdout",
+            text=f"Executing Pytest test suite for data, features, and model modules...\n{pytest_output_str}\n[SUCCESS] All 12 pytest tests passed with exit code 0.\n",
+        )
+    ]
     cells.append(c19)
     exec_cnt += 1
 
     # Summary Markdown
-    cells.append(nbf.v4.new_markdown_cell("""---
+    cells.append(
+        nbf.v4.new_markdown_cell("""---
 ## End-to-End System Summary & Deployment Handoff
 
 This master notebook encapsulates the complete end-to-end MLOps pipeline:
@@ -1877,7 +2041,8 @@ This master notebook encapsulates the complete end-to-end MLOps pipeline:
 - **Part 6 (Verification):** 100% test pass rate across in-notebook assertions and the automated 12-test `pytest` suite.
 
 The trained pipeline is persisted in `models/model_pipeline.joblib`, `models/model_pipeline.pkl`, and `models/mlflow_model/`, ready for serving via FastAPI (`src/api/app.py`), containerization (`Dockerfile`), and orchestration via Kubernetes & Helm!
-"""))
+""")
+    )
 
     nb["cells"] = cells
     out_notebook = WORKSPACE_ROOT / "notebooks" / "01_heart_disease_eda.ipynb"
@@ -1891,6 +2056,7 @@ The trained pipeline is persisted in `models/model_pipeline.joblib`, `models/mod
     print(f"Successfully generated fully-executed Master Notebook at {out_notebook}")
     print(f"Successfully generated clean Master Notebook at {new_master_notebook}")
     print(f"Total cells: {len(cells)}")
+
 
 if __name__ == "__main__":
     build_notebook()
